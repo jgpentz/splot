@@ -8,6 +8,10 @@
     margin-top: rem(40px);
 }
 
+.navbarMainC {
+    flex: 1;
+    margin-top: rem(45px);
+}
 .icon {
     width: rem(26px);
     height: rem(26px);
@@ -46,6 +50,7 @@
   font-size: var(--mantine-font-size-sm);
   color: light-dark(var(--mantine-color-gray-7), var(--mantine-color-dark-1));
   padding: var(--mantine-spacing-xs) var(--mantine-spacing-sm);
+  margin-left: rem(3px);
   border-radius: var(--mantine-radius-sm);
   font-weight: 500;
 
@@ -72,8 +77,8 @@
 }
 
 .linkCollapsed {
-    width: rem(50px);
-    height: rem(50px);
+    width: rem(49px);
+    height: rem(46px);
     display: flex;
     align-items: center;
     justify-content: center;

@@ -26,6 +26,8 @@ function CollapsedLink({ icon: Icon, label, active, onClick }: NavbarLinkProps) 
 const data = [
     { link: '', label: 'S Parameters', icon: TbChartLine },
     { link: '', label: 'Settings', icon: TbSettings },
+    { link: '', label: 'stuff2', icon: TbSettings },
+    { link: '', label: 'Stuff', icon: TbSettings },
 ];
 
 
@@ -107,7 +109,7 @@ export function Navbar({opened, toggle}: NavbarProps) {
 
                 </Center>
 
-                <div className={classes.navbarMain}>
+                <div className={classes.navbarMainC}>
                     {links}
                 </div>
 

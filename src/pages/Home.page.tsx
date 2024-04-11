@@ -1,23 +1,27 @@
+import { Aside } from '@/components/Aside/Aside';
 import { Navbar } from '@/components/Navbar/Navbar';
 import { AppShell, Burger, Group, Skeleton } from '@mantine/core';
-import { useDisclosure } from '@mantine/hooks';
+import { useDisclosure, useResizeObserver } from '@mantine/hooks';
+import { useState } from 'react';
 
 export function HomePage() {
-  const [mobileOpened, { toggle: toggleMobile }] = useDisclosure();
-  const [desktopOpened, { toggle: toggleDesktop }] = useDisclosure(true);
+  const [navOpened, { toggle: toggleNav }] = useDisclosure(true);
+  const [asideWidth, setAsideWidth] = useState(300)
 
   return (
     <AppShell
       navbar={{
-        width: desktopOpened ? 240 : 80,
+        width: navOpened ? 240 : 80,
         breakpoint: 'sm',
       }}
       aside={{ width: 300, breakpoint: "md" }}
       padding="md"
     >
-      <Navbar opened={desktopOpened} toggle={toggleDesktop}/>
+      <Navbar opened={navOpened} toggle={toggleNav}/>
       <AppShell.Main>Main</AppShell.Main>
-      <AppShell.Aside p="md">Aside</AppShell.Aside>
+      <Aside setWidth={setAsideWidth}>
+
+      </Aside>
     </AppShell>
   );
 }

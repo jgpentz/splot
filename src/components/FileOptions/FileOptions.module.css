@@ -1,0 +1,8 @@
+.Header {
+    font-weight: 500;
+    display: block;
+    color: var(--mantine-color-text);
+    margin: var(--mantine-spacing-xs);
+    font-size: var(--mantine-font-size-sm);
+    border: 1px #c9c9c9 solid;
+}
