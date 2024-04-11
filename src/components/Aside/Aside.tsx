@@ -10,8 +10,10 @@ interface AsideProps {
 export function Aside({ setWidth }: AsideProps) {
     return (
         <AppShell.Aside>
+            <div className={classes.aside}>
                 <FileOptions fname="File1.s2p" sparams={["S11", "S22"]}/>
                 <FileOptions fname="File1.s2p" sparams={["S11", "S22"]}/>
+            </div>
         </AppShell.Aside>
     );
 }

@@ -1,7 +1,7 @@
 import { ActionIcon, Box, Collapse, Grid, Group, Text, UnstyledButton } from "@mantine/core";
 import { useState } from "react"
 import classes from './FileOptions.module.css'; // Import your CSS module for styling
-import { TbChevronDown, TbChevronRight, TbEye, TbEyeClosed, TbMathXDivideY, TbMathXDivideY2, TbTrash } from "react-icons/tb";
+import { TbBorderStyle, TbBorderStyle2, TbChevronDown, TbChevronRight, TbEye, TbEyeClosed, TbMathXDivideY, TbMathXDivideY2, TbTrash, TbTriangle } from "react-icons/tb";
 
 interface sparam {
     ports: string;
@@ -17,18 +17,40 @@ export default function FileOptions({ fname, sparams }: FileOptionsProps) {
     const [visible, setVisible] = useState(true)
 
     const items = sparams.map((sparam) => (
-        <Text
-            className={classes.sparam}
-        >
-            {sparam}
-        </Text>
+        <Grid  className={classes.Sparams} columns={20}>
+            <Grid.Col span={3}></Grid.Col>
+            <Grid.Col span={3}>
+                <ActionIcon className={classes.Icon} variant="transparent" onClick={() => setVisible((o) => !o)}>
+                    {visible ? (
+                        <TbEye color="black" size="1.5em"/> 
+                    ) : (
+                        <TbEyeClosed color="black" size="1.5em"/>
+                    )}
+                </ActionIcon>
+            </Grid.Col>
+            <Grid.Col span={5} className={classes.SparamText}>{sparam}</Grid.Col>
+            <Grid.Col span={3}>
+                <ActionIcon className={classes.Icon} variant="transparent" onClick={() => setVisible((o) => !o)}>
+                    <TbBorderStyle2 color="black" size="1.5em"/> 
+                </ActionIcon>
+            </Grid.Col>
+            <Grid.Col span={3}>
+                <ActionIcon className={classes.Icon} variant="transparent" onClick={() => setVisible((o) => !o)}>
+                    <TbTriangle color="black" size="1.5em"/> 
+                </ActionIcon>
+            </Grid.Col>
+        </Grid>
     ));
 
     return(
         <>
             <Grid className={classes.Header} columns={20}>
                 <Grid.Col span={3}>
-                    <ActionIcon variant="transparent" onClick={() => setVisible((o) => !o)}>
+                    <ActionIcon 
+                        className={`${classes.Icon} ${classes.HeaderFirstIcon}`} 
+                        variant="transparent" 
+                        onClick={() => setVisible((o) => !o)}
+                    >
                         {visible ? (
                             <TbEye color="black" size="1.5em"/> 
                         ) : (
@@ -36,9 +58,9 @@ export default function FileOptions({ fname, sparams }: FileOptionsProps) {
                         )}
                     </ActionIcon>
                 </Grid.Col>
-                <Grid.Col span={8}>{fname}</Grid.Col>
+                <Grid.Col span={8} className={classes.HeaderText}>{fname}</Grid.Col>
                 <Grid.Col span={3}>
-                    <ActionIcon variant="transparent" onClick={() => setVisible((o) => !o)}>
+                    <ActionIcon className={classes.Icon} variant="transparent" onClick={() => setVisible((o) => !o)}>
                         {visible ? (
                             <TbMathXDivideY2 color="black" size="1.5em"/> 
                         ) : (
@@ -47,7 +69,7 @@ export default function FileOptions({ fname, sparams }: FileOptionsProps) {
                     </ActionIcon>
                 </Grid.Col>
                 <Grid.Col span={3}>
-                    <ActionIcon variant="transparent" onClick={() => setVisible((o) => !o)}>
+                    <ActionIcon className={classes.Icon} variant="transparent" onClick={() => setVisible((o) => !o)}>
                         {visible ? (
                             <TbTrash color="black" size="1.5em"/> 
                         ) : (
@@ -56,7 +78,7 @@ export default function FileOptions({ fname, sparams }: FileOptionsProps) {
                     </ActionIcon>
                 </Grid.Col>
                 <Grid.Col span={3}>
-                    <ActionIcon variant="transparent" onClick={() => setOpened((o) => !o)}>
+                    <ActionIcon className={classes.Icon} variant="transparent" onClick={() => setOpened((o) => !o)}>
                         {opened ? (
                             <TbChevronDown color="black" size="1.3em"/> 
                         ) : (
@@ -65,7 +87,9 @@ export default function FileOptions({ fname, sparams }: FileOptionsProps) {
                     </ActionIcon>
                 </Grid.Col>
             </Grid>
-            <Collapse in={opened}>{items}</Collapse>
+            <Collapse in={opened} className={classes.CollapsedGroup} transitionDuration={0}>
+                {items}
+            </Collapse>
         </>
     )
 }
