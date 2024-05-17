@@ -5,19 +5,19 @@ import { useDisclosure, useResizeObserver } from '@mantine/hooks';
 import { useState } from 'react';
 
 export function HomePage() {
-  const [navOpened, { toggle: toggleNav }] = useDisclosure(true);
+  const [navCollapsed, { toggle: toggleNav }] = useDisclosure(true);
   const [asideWidth, setAsideWidth] = useState(300)
 
   return (
     <AppShell
       navbar={{
-        width: navOpened ? 240 : 80,
+        width: navCollapsed ? 80 : 240,
         breakpoint: 'sm',
       }}
       aside={{ width: 300, breakpoint: "md" }}
       padding="md"
     >
-      <Navbar opened={navOpened} toggle={toggleNav}/>
+      <Navbar collapsed={navCollapsed} toggle={toggleNav}/>
       <AppShell.Main>Main</AppShell.Main>
       <Aside setWidth={setAsideWidth}>
 
