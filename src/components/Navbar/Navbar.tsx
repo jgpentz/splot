@@ -5,7 +5,8 @@ import FrfLogo from "../FrfLogo/FrfLogo";
 import { useState } from "react";
 import { NavbarLink, NavbarLinkData } from "../NavbarLink/NavbarLink";
 
-const data = [
+// Navigation links
+const links = [
     { link: '', label: 'S Parameters', icon: TbChartLine },
     { link: '', label: 'Settings', icon: TbSettings },
     { link: '', label: 'stuff2', icon: TbSettings },
@@ -13,7 +14,7 @@ const data = [
 ];
 
 
-// Child component receiving state and function as props
+// Type definition for the props passed into Navbar component
 type NavbarProps = {
     collapsed: boolean;
     toggle: () => void;
@@ -25,6 +26,7 @@ export function Navbar({collapsed, toggle}: NavbarProps) {
     return (
         <AppShell.Navbar p="sm" className="{classes.navbar}">
             {collapsed ? ( 
+                /* Collapsed navbar only shows expand button, link icons, and version */
                 <>
                     <Center>
                         <Tooltip label="Expand" position="right" transitionProps={{ duration: 0 }}>
@@ -41,8 +43,9 @@ export function Navbar({collapsed, toggle}: NavbarProps) {
 
                     </Center>
 
+                    {/* Render each link that exists in the links variable*/}
                     <div className={classes.navbarMainC}>
-                        {data.map((item) => {
+                        {links.map((item) => {
                             const link_data: NavbarLinkData = {
                                 link: item.link,
                                 label: item.label,
@@ -60,11 +63,14 @@ export function Navbar({collapsed, toggle}: NavbarProps) {
                         })}
                     </div>
 
+                    {/* Semantic version */}
+                    {/* TODO: This should be a variable that can be automatically updated */}
                     <div>
                         <Code>v0.0.1</Code>
                     </div>
                 </>
             ) : (
+                /* Full size navbar shows logo, links with icons and name, and version */
                 <>
                     <Group gap={0}>
                         <FrfLogo width={170} height={50} />
@@ -81,8 +87,9 @@ export function Navbar({collapsed, toggle}: NavbarProps) {
                         </Tooltip>
                     </Group>
 
+                    {/* Render each link that exists in the links variable*/}
                     <div className={classes.navbarMain}>
-                        {data.map((item) => {
+                        {links.map((item) => {
                             const link_data: NavbarLinkData = {
                                 link: item.link,
                                 label: item.label,
@@ -100,6 +107,8 @@ export function Navbar({collapsed, toggle}: NavbarProps) {
                         })}
                     </div>
 
+                    {/* Semantic version */}
+                    {/* TODO: This should be a variable that can be automatically updated */}
                     <div>
                         <Code>v0.0.1</Code>
                     </div>
