@@ -9,12 +9,12 @@ export default {
 
 export const Default = {
     args: {
-        opened: true,
+        collapsed: false,
     },
 };
 
 export const Collapsed = {
     args: {
-        opened: false,
+        collapsed: true,
     },
 };

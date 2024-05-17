@@ -5,7 +5,7 @@ import { useDisclosure, useResizeObserver } from '@mantine/hooks';
 import { useState } from 'react';
 
 export function HomePage() {
-  const [navCollapsed, { toggle: toggleNav }] = useDisclosure(true);
+  const [navCollapsed, { toggle: toggleNav }] = useDisclosure(false);
   const [asideWidth, setAsideWidth] = useState(300)
 
   return (
