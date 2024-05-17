@@ -7,7 +7,7 @@ interface AsideProps {
     setWidth: React.Dispatch<React.SetStateAction<number>>;
 }
 
-export function Aside({ setWidth }: AsideProps) {
+export default function Aside({ setWidth }: AsideProps) {
     return (
         <AppShell.Aside>
             <div className={classes.aside}>

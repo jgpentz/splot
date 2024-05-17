@@ -1,11 +1,10 @@
-import { M } from 'vite/dist/node/types.d-aGj9QkWt';
 import { NavbarLink } from './NavbarLink';
 import { TbChartLine } from 'react-icons/tb';
 
 export default {
     component: NavbarLink,
     title: 'NavbarLink',
-     decorators: [(story) => <div style={{ width: '200px' }}>{story()}</div>],
+    decorators: [(story) => <div style={{ width: '200px' }}>{story()}</div>],
     tags: ['autodocs'],
 };
 

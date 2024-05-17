@@ -1,4 +1,3 @@
-import { M } from 'vite/dist/node/types.d-aGj9QkWt';
 import { Navbar } from './Navbar';
 
 export default {
