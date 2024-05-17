@@ -1,12 +1,12 @@
 import { Aside } from '@/components/Aside/Aside';
 import { Navbar } from '@/components/Navbar/Navbar';
+import { SparamGraph } from '@/components/SparamGraph/SparamGraph';
 import { AppShell, Burger, Group, Skeleton } from '@mantine/core';
 import { useDisclosure, useResizeObserver } from '@mantine/hooks';
 import { useState } from 'react';
 
 export function HomePage() {
   const [navCollapsed, { toggle: toggleNav }] = useDisclosure(false);
-  const [asideWidth, setAsideWidth] = useState(300)
 
   return (
     <AppShell
@@ -18,10 +18,8 @@ export function HomePage() {
       padding="md"
     >
       <Navbar collapsed={navCollapsed} toggle={toggleNav}/>
-      <AppShell.Main>Main</AppShell.Main>
-      <Aside setWidth={setAsideWidth}>
-
-      </Aside>
+      <AppShell.Main><SparamGraph /></AppShell.Main>
+      <Aside />
     </AppShell>
   );
 }

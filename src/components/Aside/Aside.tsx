@@ -4,13 +4,7 @@ import classes from './Aside.module.css'; // Import your CSS module for styling
 import FileOptions from '../FileOptions/FileOptions';
 
 
-// Interface to define the props for the Aside component
-interface AsideProps {
-    setWidth: React.Dispatch<React.SetStateAction<number>>;
-}
-
-// Aside component definition
-export default function Aside({ setWidth }: AsideProps) {
+export function Aside() {
     return (
         <AppShell.Aside>
             <div className={classes.aside}>
