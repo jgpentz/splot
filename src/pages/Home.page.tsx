@@ -1,4 +1,6 @@
 import { Aside } from '@/components/Aside/Aside';
+import { BasicLineChart } from '@/components/DropZone/BasicLineChart';
+import { DropZone } from '@/components/DropZone/DropZone';
 import { Navbar } from '@/components/Navbar/Navbar';
 import { SparamGraph } from '@/components/SparamGraph/SparamGraph';
 import { AppShell, Burger, Group, Skeleton } from '@mantine/core';
@@ -18,7 +20,9 @@ export function HomePage() {
       padding="md"
     >
       <Navbar collapsed={navCollapsed} toggle={toggleNav}/>
-      <AppShell.Main><SparamGraph /></AppShell.Main>
+      <AppShell.Main>
+          <SparamGraph />
+      </AppShell.Main>
       <Aside />
     </AppShell>
   );

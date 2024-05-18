@@ -3,7 +3,7 @@ import { Group, Text, rem } from '@mantine/core';
 import { Dropzone, IMAGE_MIME_TYPE } from '@mantine/dropzone';
 import { CartesianGrid, Line, LineChart, XAxis, YAxis, Tooltip } from 'recharts';
 import { TbFileUpload, TbGraph, TbX } from 'react-icons/tb';
-import classes from './SparamGraph.module.css';
+import classes from './SparamGraph.module.css'
 
 const data = [
     { name: 'Page A', uv: 400, pv: 2400, amt: 2400 },
@@ -15,39 +15,19 @@ const data = [
 ];
 
 export function SparamGraph() {
-    const [dropzoneVisible, setDropzoneVisible] = useState(true); // Initially, dropzone is invisible
-    let timer; // Timer to delay hiding dropzone
+    const [dropzoneVisible, setDropzoneVisible] = useState(true);
 
-    const handleDrop = (files) => {
+    const handleDrop = (files: File[]) => {
         console.log('accepted files', files);
-        setDropzoneVisible(false); // Hide dropzone after file is dropped
+        setDropzoneVisible(false);
     };
 
-    const handleReject = (files) => {
+    const handleReject = (files: File[]) => {
         console.log('rejected files', files);
-        setDropzoneVisible(false); // Hide dropzone if file is rejected
-    };
-
-    const handleDragOver = () => {
-        if (!dropzoneVisible) {
-            setDropzoneVisible(true); // Set dropzone visible when a file is dragged over
-        }
-        clearTimeout(timer); // Clear any existing timer
-    };
-
-    const handleDragLeave = () => {
-        // Delay hiding dropzone by 200 milliseconds to prevent flickering
-        timer = setTimeout(() => {
-            setDropzoneVisible(false);
-        }, 200);
     };
 
     return (
-        <div
-            style={{ width: '100%', height: '100%', margin: '50px' }}
-            onDragOver={handleDragOver} // Add drag over event listener
-            onDragLeave={handleDragLeave} // Add drag leave event listener
-        >
+        <div style={{ width: '100%', height: '100%', margin: '50px'}}>
             <LineChart width={1600} height={800} data={data}>
                 <Line type="monotone" dataKey="uv" stroke="#8884d8" />
                 <CartesianGrid stroke="#ccc" />
@@ -56,7 +36,7 @@ export function SparamGraph() {
                 <Tooltip />
             </LineChart>
 
-            {dropzoneVisible && (
+            {dropzoneVisible ? (
                 <Dropzone
                     onDrop={handleDrop}
                     onReject={handleReject}
@@ -98,6 +78,48 @@ export function SparamGraph() {
                         </div>
                     </Group>
                 </Dropzone>
+            ) : (
+                <Dropzone.FullScreen
+                    onDrop={handleDrop}
+                    onReject={handleReject}
+                    maxSize={5 * 1024 ** 2}
+                    accept={IMAGE_MIME_TYPE}
+                    style={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        width: '100%',
+                        height: '100%',
+                        backgroundColor: 'rgba(255, 255, 255, 0.7)',
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                    }}
+                >
+                    <Group style={{ pointerEvents: 'none' }}>
+                        <Dropzone.Accept>
+                            <TbFileUpload
+                                style={{ width: rem(52), height: rem(52), color: 'var(--mantine-color-blue-6)' }}
+                            />
+                        </Dropzone.Accept>
+                        <Dropzone.Reject>
+                            <TbX style={{ width: rem(52), height: rem(52), color: 'var(--mantine-color-red-6)' }} />
+                        </Dropzone.Reject>
+                        <Dropzone.Idle>
+                            <TbGraph
+                                style={{ width: rem(52), height: rem(52), color: 'var(--mantine-color-dimmed)' }}
+                            />
+                        </Dropzone.Idle>
+                        <div>
+                            <Text size="xl" inline>
+                                Drag SnP files here or click to select files
+                            </Text>
+                            <Text size="sm" inline mt={7}>
+                                Attach as many files as you like, each file should not exceed 5MB
+                            </Text>
+                        </div>
+                    </Group>
+                </Dropzone.FullScreen>
             )}
         </div>
     );
