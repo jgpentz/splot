@@ -1,29 +1,31 @@
 import { Aside } from '@/components/Aside/Aside';
-import { BasicLineChart } from '@/components/DropZone/BasicLineChart';
-import { DropZone } from '@/components/DropZone/DropZone';
 import { Navbar } from '@/components/Navbar/Navbar';
 import { SparamGraph } from '@/components/SparamGraph/SparamGraph';
-import { AppShell, Burger, Group, Skeleton } from '@mantine/core';
-import { useDisclosure, useResizeObserver } from '@mantine/hooks';
-import { useState } from 'react';
+import { Testone } from '@/components/Test/testone';
+import { AppShell } from '@mantine/core';
+import { useDisclosure, } from '@mantine/hooks';
 
 export function HomePage() {
   const [navCollapsed, { toggle: toggleNav }] = useDisclosure(false);
 
-  return (
-    <AppShell
-      navbar={{
-        width: navCollapsed ? 80 : 240,
-        breakpoint: 'sm',
-      }}
-      aside={{ width: 300, breakpoint: "md" }}
-      padding="md"
-    >
-      <Navbar collapsed={navCollapsed} toggle={toggleNav}/>
-      <AppShell.Main>
-          <SparamGraph />
-      </AppShell.Main>
-      <Aside />
-    </AppShell>
-  );
+    return (
+        <AppShell
+            navbar={{
+                width: (navCollapsed ? 80 : 240),
+                breakpoint: 'xs',
+                collapsed: { desktop: false, mobile: true}
+            }}
+            aside={{ 
+                width: 300, 
+                breakpoint: "md", 
+                collapsed: { desktop: false, mobile: true }
+            }}
+        >
+            <Navbar collapsed={navCollapsed} toggle={toggleNav}/>
+            <AppShell.Main>
+                <SparamGraph />
+            </AppShell.Main>
+            <Aside />
+        </AppShell>
+    );
 }

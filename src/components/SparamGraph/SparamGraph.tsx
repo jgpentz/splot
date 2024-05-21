@@ -1,9 +1,21 @@
-import React, { useState } from 'react';
-import { Group, Text, rem } from '@mantine/core';
+import React, { useEffect, useState } from 'react';
+import { Box, Container, Group, Text, rem } from '@mantine/core';
 import { Dropzone, IMAGE_MIME_TYPE } from '@mantine/dropzone';
-import { CartesianGrid, Line, LineChart, XAxis, YAxis, Tooltip } from 'recharts';
+import { CartesianGrid, Line, LineChart, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import { TbFileUpload, TbGraph, TbX } from 'react-icons/tb';
 import classes from './SparamGraph.module.css';
+
+enum ErrorCode {
+  FileInvalidType = "file-invalid-type",
+  FileTooLarge = "file-too-large",
+  FileTooSmall = "file-too-small",
+  TooManyFiles = "too-many-files",
+}
+
+interface FileError {
+  message: string;
+  code: ErrorCode | string;
+}
 
 const data = [
     { name: 'Page A', uv: 400, pv: 2400, amt: 2400 },
@@ -16,7 +28,18 @@ const data = [
 
 export function SparamGraph() {
     const [dropzoneVisible, setDropzoneVisible] = useState(true); // Initially, dropzone is invisible
+    const [height, setHeight] = useState(window.innerHeight * 0.85);
     let timer; // Timer to delay hiding dropzone
+
+    useEffect(() => {
+        const handleResize = () => {
+            setHeight(window.innerHeight * 0.85);
+        };
+        
+        window.addEventListener('resize', handleResize);
+        console.log(height)
+        return () => window.removeEventListener('resize', handleResize);
+    }, [window.innerHeight]);
 
     const handleDrop = (files) => {
         console.log('accepted files', files);
@@ -39,29 +62,33 @@ export function SparamGraph() {
         // Delay hiding dropzone by 200 milliseconds to prevent flickering
         timer = setTimeout(() => {
             setDropzoneVisible(false);
-        }, 200);
+        }, 50);
     };
 
     return (
-        <div
-            style={{ width: '100%', height: '100%', margin: '50px' }}
+        <Container
+            fluid
+            w='90%'
+            style={{ height: height }} 
+            p='50'
             onDragOver={handleDragOver} // Add drag over event listener
             onDragLeave={handleDragLeave} // Add drag leave event listener
         >
-            <LineChart width={1600} height={800} data={data}>
-                <Line type="monotone" dataKey="uv" stroke="#8884d8" />
-                <CartesianGrid stroke="#ccc" />
-                <XAxis dataKey="name" label={{ value: 'Hz', position: 'insideBottom', offset: -10 }} />
-                <YAxis label={{ value: 'dB', angle: -90, position: 'insideLeft', offset: -20 }} />
-                <Tooltip />
-            </LineChart>
+            <ResponsiveContainer>
+                <LineChart data={data}>
+                    <Line type="monotone" dataKey="uv" stroke="#8884d8" />
+                    <CartesianGrid stroke="#ccc" />
+                    <XAxis dataKey="name" label={{ value: 'Hz', position: 'insideBottom', offset: -10 }} />
+                    <YAxis label={{ value: 'dB', angle: -90, position: 'insideLeft', offset: -20 }} />
+                    <Tooltip />
+                </LineChart>
+            </ResponsiveContainer>
 
             {dropzoneVisible && (
                 <Dropzone
                     onDrop={handleDrop}
                     onReject={handleReject}
                     maxSize={5 * 1024 ** 2}
-                    accept={IMAGE_MIME_TYPE}
                     style={{
                         position: 'absolute',
                         top: 0,
@@ -71,7 +98,7 @@ export function SparamGraph() {
                         backgroundColor: 'rgba(255, 255, 255, 0.7)',
                         display: 'flex',
                         justifyContent: 'center',
-                        alignItems: 'center',
+                        paddingTop: '15%',
                     }}
                 >
                     <Group style={{ pointerEvents: 'none' }}>
@@ -99,6 +126,6 @@ export function SparamGraph() {
                     </Group>
                 </Dropzone>
             )}
-        </div>
+        </Container>
     );
 }
