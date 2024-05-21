@@ -1,21 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { Box, Container, Group, Text, rem } from '@mantine/core';
 import { Dropzone, IMAGE_MIME_TYPE } from '@mantine/dropzone';
 import { CartesianGrid, Line, LineChart, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import { TbFileUpload, TbGraph, TbX } from 'react-icons/tb';
 import classes from './SparamGraph.module.css';
-
-enum ErrorCode {
-  FileInvalidType = "file-invalid-type",
-  FileTooLarge = "file-too-large",
-  FileTooSmall = "file-too-small",
-  TooManyFiles = "too-many-files",
-}
-
-interface FileError {
-  message: string;
-  code: ErrorCode | string;
-}
+import { SparamFile } from '@/pages/Sparams.page';
 
 const data = [
     { name: 'Page A', uv: 400, pv: 2400, amt: 2400 },
@@ -26,31 +15,53 @@ const data = [
     { name: 'Page F', uv: 270, pv: 2400, amt: 2400 },
 ];
 
-export function SparamGraph() {
+interface SparamGraphProps {
+    sparams: SparamFile[];
+    setSparams: Dispatch<SetStateAction<SparamFile[]>>;
+}
+
+export function SparamGraph({sparams, setSparams}: SparamGraphProps) {
     const [dropzoneVisible, setDropzoneVisible] = useState(true); // Initially, dropzone is invisible
     const [height, setHeight] = useState(window.innerHeight * 0.85);
     let timer; // Timer to delay hiding dropzone
 
+    
+    /* Update the heigh to make our graph responsive to changes in window size */
     useEffect(() => {
         const handleResize = () => {
             setHeight(window.innerHeight * 0.85);
         };
         
         window.addEventListener('resize', handleResize);
-        console.log(height)
         return () => window.removeEventListener('resize', handleResize);
     }, [window.innerHeight]);
 
+    const addFile = (files: any) => {
+        const newSparams: SparamFile[] = []
+        for (var i = 0; i < files.length; i++) {
+            const sparams: SparamFile = {
+                filename: files[i].name,
+                data: null
+            };
+            newSparams.push(sparams);
+        }
+        setSparams((prevSparams) => [...prevSparams, ...newSparams])
+    }
+
+    /* Handle file drop */
     const handleDrop = (files) => {
         console.log('accepted files', files);
         setDropzoneVisible(false); // Hide dropzone after file is dropped
+        addFile(files)
     };
 
+    /* Handle rejected file types */
     const handleReject = (files) => {
         console.log('rejected files', files);
         setDropzoneVisible(false); // Hide dropzone if file is rejected
     };
 
+    /* Handle when a file is dragged onto the window */
     const handleDragOver = () => {
         if (!dropzoneVisible) {
             setDropzoneVisible(true); // Set dropzone visible when a file is dragged over
@@ -58,6 +69,7 @@ export function SparamGraph() {
         clearTimeout(timer); // Clear any existing timer
     };
 
+    /* Handle when a dragged file leaves the window */
     const handleDragLeave = () => {
         // Delay hiding dropzone by 200 milliseconds to prevent flickering
         timer = setTimeout(() => {
@@ -120,7 +132,7 @@ export function SparamGraph() {
                                 Drag SnP files here or click to select files
                             </Text>
                             <Text size="sm" inline mt={7}>
-                                Attach as many files as you like, each file should not exceed 5MB
+                                Attach as many files as you like
                             </Text>
                         </div>
                     </Group>
