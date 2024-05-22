@@ -5,14 +5,14 @@ import { AppShell } from '@mantine/core';
 import { useDisclosure, } from '@mantine/hooks';
 import { useState } from 'react';
 
-export interface SparamFile {
+export interface SparamData {
     filename: string;
     data: any;
 }
 
 export function SparamsPage() {
     const [navCollapsed, { toggle: toggleNav }] = useDisclosure(false);
-    const [sparams, setSparams] = useState<SparamFile[]>([]);
+    const [sparams, setSparams] = useState<SparamData[]>([]);
     console.log(sparams)
 
     return (

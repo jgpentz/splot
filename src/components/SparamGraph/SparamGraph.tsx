@@ -4,7 +4,7 @@ import { Dropzone, IMAGE_MIME_TYPE } from '@mantine/dropzone';
 import { CartesianGrid, Line, LineChart, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import { TbFileUpload, TbGraph, TbX } from 'react-icons/tb';
 import classes from './SparamGraph.module.css';
-import { SparamFile } from '@/pages/Sparams.page';
+import { SparamData } from '@/pages/Sparams.page';
 
 const data = [
     { name: 'Page A', uv: 400, pv: 2400, amt: 2400 },
@@ -15,9 +15,14 @@ const data = [
     { name: 'Page F', uv: 270, pv: 2400, amt: 2400 },
 ];
 
+interface SparamFile {
+    fname: string;
+    fcontents: any;
+}
+
 interface SparamGraphProps {
-    sparams: SparamFile[];
-    setSparams: Dispatch<SetStateAction<SparamFile[]>>;
+    sparams: SparamData[];
+    setSparams: Dispatch<SetStateAction<SparamData[]>>;
 }
 
 export function SparamGraph({sparams, setSparams}: SparamGraphProps) {
@@ -26,7 +31,7 @@ export function SparamGraph({sparams, setSparams}: SparamGraphProps) {
     let timer; // Timer to delay hiding dropzone
 
     
-    /* Update the heigh to make our graph responsive to changes in window size */
+    /* Update the height to make our graph responsive to changes in window size */
     useEffect(() => {
         const handleResize = () => {
             setHeight(window.innerHeight * 0.85);
@@ -36,8 +41,30 @@ export function SparamGraph({sparams, setSparams}: SparamGraphProps) {
         return () => window.removeEventListener('resize', handleResize);
     }, [window.innerHeight]);
 
+    // Send the new files to the backend for processing
+    const processFileData = async (sparams: SparamFile[]) => {
+        console.log(sparams)
+        console.log(JSON.stringify(sparams))
+        try {
+            const response = await fetch('http://localhost:8080/sparams', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(sparams)
+            });
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            const responseData = await response.json();
+            console.log('Successfully sent data to the backend', responseData);
+        } catch (error) {
+                console.error('Error sending data to the backend', error);
+        }
+    };
+
     /* Send file data to backend, then store the processed data in sparams list */
-    const processFileData = (files: File[]) => {
+    const getFileData = (files: File[]) => {
         const newSparams: SparamFile[] = []
         const regex = /^s\d+p$/;
 
@@ -48,7 +75,7 @@ export function SparamGraph({sparams, setSparams}: SparamGraphProps) {
                 const reader = new FileReader();
                 reader.onabort = () => reject('file reading aborted');
                 reader.onerror = () => reject('file reading error');
-                reader.onload = () => resolve({filename: file.name, data: reader.result});
+                reader.onload = () => resolve({ fname: file.name, fcontents: Array.from(new Uint8Array(reader.result)) });
                 reader.readAsArrayBuffer(file); // Start reading the file
             });
         };
@@ -72,22 +99,19 @@ export function SparamGraph({sparams, setSparams}: SparamGraphProps) {
                     // Add each resolved file data object to the newSparams array
                     newSparams.push(result);
                 });
-                // Update the sparams state with the new file data
-                setSparams((prevSparams) => [...prevSparams, ...newSparams]);
+                // Send the new files to the backend for processing
+                processFileData(newSparams);
             })
             .catch(error => {
                 console.error(error);
             })
-
-        // Send the new files to the backend for processing
-
     }
 
     /* Handle file drop */
     const handleDrop = (files: File[]) => {
         console.log('accepted files', files);
         setDropzoneVisible(false); // Hide dropzone after file is dropped
-        processFileData(files)
+        getFileData(files)
     };
 
     /* Handle rejected file types */
