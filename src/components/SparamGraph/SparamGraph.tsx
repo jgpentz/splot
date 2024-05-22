@@ -42,16 +42,19 @@ export function SparamGraph({sparams, setSparams}: SparamGraphProps) {
     }, [window.innerHeight]);
 
     // Send the new files to the backend for processing
-    const processFileData = async (sparams: SparamFile[]) => {
-        console.log(sparams)
-        console.log(JSON.stringify(sparams))
+    const processFileData = async (files: File[]) => {
         try {
+            const formData = new FormData();
+
+            // Append each file to the FormData object
+            files.forEach(file => {
+                formData.append('files', file);
+            });
+
+            console.log(formData)
             const response = await fetch('http://localhost:8080/sparams', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(sparams)
+                body: formData
             });
             if (!response.ok) {
                 throw new Error('Network response was not ok');
@@ -65,46 +68,21 @@ export function SparamGraph({sparams, setSparams}: SparamGraphProps) {
 
     /* Send file data to backend, then store the processed data in sparams list */
     const getFileData = (files: File[]) => {
-        const newSparams: SparamFile[] = []
+        const newFiles: File[] = []
         const regex = /^s\d+p$/;
 
-        // Function to read a file as an ArrayBuffer and return a promise
-        const readFileAsArrayBuffer = (file: File): Promise<SparamFile> => {
-            return new Promise((resolve, reject) => {
-                // Create a file reader and set up event handlers for the FileReader
-                const reader = new FileReader();
-                reader.onabort = () => reject('file reading aborted');
-                reader.onerror = () => reject('file reading error');
-                reader.onload = () => resolve({ fname: file.name, fcontents: Array.from(new Uint8Array(reader.result)) });
-                reader.readAsArrayBuffer(file); // Start reading the file
-            });
-        };
-
-        // Go through each file, creating a new promise to process snp files
-        const promises = [];
-        for (let i = 0; i < files.length; i++) {
-            const fname = files[i].name.split('.');
+        // Filter files that match the regex pattern
+        const filteredFiles = files.filter(file => {
+            const fname = file.name.split('.');
             const fext = fname[fname.length - 1].toLowerCase();
+            return regex.test(fext);
+        });
 
-            // Only accept files that have an extension of sNp
-            if(regex.test(fext)) {
-                promises.push(readFileAsArrayBuffer(files[i]))
-            }
-        }
+        filteredFiles.forEach(file => {
+            newFiles.push(file)
+        });
 
-        // Wait for all file reading promises to resolve
-        Promise.all(promises)
-            .then(results => {
-                results.forEach(result => {
-                    // Add each resolved file data object to the newSparams array
-                    newSparams.push(result);
-                });
-                // Send the new files to the backend for processing
-                processFileData(newSparams);
-            })
-            .catch(error => {
-                console.error(error);
-            })
+        processFileData(newFiles);
     }
 
     /* Handle file drop */
@@ -133,7 +111,7 @@ export function SparamGraph({sparams, setSparams}: SparamGraphProps) {
         // Delay hiding dropzone by 200 milliseconds to prevent flickering
         timer = setTimeout(() => {
             setDropzoneVisible(false);
-        }, 50);
+        }, 100);
     };
 
     return (
