@@ -36,27 +36,62 @@ export function SparamGraph({sparams, setSparams}: SparamGraphProps) {
         return () => window.removeEventListener('resize', handleResize);
     }, [window.innerHeight]);
 
-    const addFile = (files: any) => {
+    /* Send file data to backend, then store the processed data in sparams list */
+    const processFileData = (files: File[]) => {
         const newSparams: SparamFile[] = []
-        for (var i = 0; i < files.length; i++) {
-            const sparams: SparamFile = {
-                filename: files[i].name,
-                data: null
-            };
-            newSparams.push(sparams);
+        const regex = /^s\d+p$/;
+
+        // Function to read a file as an ArrayBuffer and return a promise
+        const readFileAsArrayBuffer = (file: File): Promise<SparamFile> => {
+            return new Promise((resolve, reject) => {
+                // Create a file reader and set up event handlers for the FileReader
+                const reader = new FileReader();
+                reader.onabort = () => reject('file reading aborted');
+                reader.onerror = () => reject('file reading error');
+                reader.onload = () => resolve({filename: file.name, data: reader.result});
+                reader.readAsArrayBuffer(file); // Start reading the file
+            });
+        };
+
+        // Go through each file, creating a new promise to process snp files
+        const promises = [];
+        for (let i = 0; i < files.length; i++) {
+            const fname = files[i].name.split('.');
+            const fext = fname[fname.length - 1].toLowerCase();
+
+            // Only accept files that have an extension of sNp
+            if(regex.test(fext)) {
+                promises.push(readFileAsArrayBuffer(files[i]))
+            }
         }
-        setSparams((prevSparams) => [...prevSparams, ...newSparams])
+
+        // Wait for all file reading promises to resolve
+        Promise.all(promises)
+            .then(results => {
+                results.forEach(result => {
+                    // Add each resolved file data object to the newSparams array
+                    newSparams.push(result);
+                });
+                // Update the sparams state with the new file data
+                setSparams((prevSparams) => [...prevSparams, ...newSparams]);
+            })
+            .catch(error => {
+                console.error(error);
+            })
+
+        // Send the new files to the backend for processing
+
     }
 
     /* Handle file drop */
-    const handleDrop = (files) => {
+    const handleDrop = (files: File[]) => {
         console.log('accepted files', files);
         setDropzoneVisible(false); // Hide dropzone after file is dropped
-        addFile(files)
+        processFileData(files)
     };
 
     /* Handle rejected file types */
-    const handleReject = (files) => {
+    const handleReject = (files: File[]) => {
         console.log('rejected files', files);
         setDropzoneVisible(false); // Hide dropzone if file is rejected
     };
