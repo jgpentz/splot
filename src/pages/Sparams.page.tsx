@@ -5,10 +5,17 @@ import { AppShell } from '@mantine/core';
 import { useDisclosure, } from '@mantine/hooks';
 import { useState } from 'react';
 
-export interface SparamData {
-    filename: string;
-    data: any;
+export interface DataSet {
+  m: number[];
+  n: number[];
+  frequency: number[];
+  [key: string]: number[] | number[][];
 }
+
+export interface SparamData {
+  [filename: string]: DataSet;
+}
+
 
 export function SparamsPage() {
     const [navCollapsed, { toggle: toggleNav }] = useDisclosure(false);

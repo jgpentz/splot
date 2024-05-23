@@ -55,16 +55,24 @@ export function SparamGraph({sparams, setSparams}: SparamGraphProps) {
                 formData.append('files', file);
             });
 
-            console.log(formData)
             const response = await fetch('http://localhost:8080/sparams', {
                 method: 'POST',
                 body: formData
             });
+
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
-            const responseData = await response.json();
+
+            const responseData: SparamData = await response.json();
             console.log('Successfully sent data to the backend', responseData);
+
+            // Append the new sparams data
+            setSparams(prevSparams => ({
+                ...prevSparams,
+                ...responseData
+            }));
+
         } catch (error) {
                 console.error('Error sending data to the backend', error);
         }
