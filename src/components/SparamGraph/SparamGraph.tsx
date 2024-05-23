@@ -86,7 +86,15 @@ export function SparamGraph({sparams, setSparams}: SparamGraphProps) {
             newFiles.push(file)
         });
 
-        processFileData(newFiles);
+        // Only send files to backend if there were files with a snp extension
+        if (newFiles.length > 0) {
+            processFileData(newFiles);
+        } else {
+            // Have to set the dropzone back to visible if there are no sparams
+            if (sparams.length === 0) {
+                setDropzoneVisible(true);
+            }
+        }
     }
 
     /* Handle file drop */
