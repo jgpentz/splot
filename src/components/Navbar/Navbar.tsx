@@ -45,7 +45,7 @@ export function Navbar({collapsed, toggle}: NavbarProps) {
 
                     {/* Render each link that exists in the links variable*/}
                     <div className={classes.navbarMainC}>
-                        {links.map((item) => {
+                        {links.map((item, index) => {
                             const link_data: NavbarLinkData = {
                                 link: item.link,
                                 label: item.label,
@@ -54,6 +54,7 @@ export function Navbar({collapsed, toggle}: NavbarProps) {
 
                             return (
                                 <NavbarLink 
+                                    key={`${item.link}-${index}`}
                                     selected={active} 
                                     setSelected={setActive} 
                                     collapsed={collapsed} 
@@ -89,7 +90,7 @@ export function Navbar({collapsed, toggle}: NavbarProps) {
 
                     {/* Render each link that exists in the links variable*/}
                     <div className={classes.navbarMain}>
-                        {links.map((item) => {
+                        {links.map((item, index) => {
                             const link_data: NavbarLinkData = {
                                 link: item.link,
                                 label: item.label,
@@ -98,6 +99,7 @@ export function Navbar({collapsed, toggle}: NavbarProps) {
 
                             return (
                                 <NavbarLink 
+                                    key={`${item.link}-${index}`}
                                     selected={active} 
                                     setSelected={setActive} 
                                     collapsed={collapsed} 

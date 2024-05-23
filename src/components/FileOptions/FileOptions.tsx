@@ -19,8 +19,8 @@ export default function FileOptions({ fname, sparams }: FileOptionsProps) {
     const [visible, setVisible] = useState(true)
 
     // Map through sparams to create options for each s param contained in the file
-    const items = sparams.map((sparam) => (
-        <Grid  className={classes.Sparams} columns={20}>
+    const items = sparams.map((sparam, index) => (
+        <Grid  key={`${sparam}-${index}`} className={classes.Sparams} columns={20}>
             <Grid.Col span={3}></Grid.Col>
             {/* Toggle visibility */}
             <Grid.Col span={3}>

@@ -1,6 +1,6 @@
-import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
-import { Box, Container, Group, Text, rem } from '@mantine/core';
-import { Dropzone, IMAGE_MIME_TYPE } from '@mantine/dropzone';
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
+import { Container, Group, Text, rem } from '@mantine/core';
+import { Dropzone, FileRejection } from '@mantine/dropzone';
 import { CartesianGrid, Line, LineChart, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import { TbFileUpload, TbGraph, TbX } from 'react-icons/tb';
 import classes from './SparamGraph.module.css';
@@ -15,10 +15,6 @@ const data = [
     { name: 'Page F', uv: 270, pv: 2400, amt: 2400 },
 ];
 
-interface SparamFile {
-    fname: string;
-    fcontents: any;
-}
 
 interface SparamGraphProps {
     sparams: SparamData[];
@@ -28,7 +24,15 @@ interface SparamGraphProps {
 export function SparamGraph({sparams, setSparams}: SparamGraphProps) {
     const [dropzoneVisible, setDropzoneVisible] = useState(true); // Initially, dropzone is invisible
     const [height, setHeight] = useState(window.innerHeight * 0.85);
-    let timer; // Timer to delay hiding dropzone
+    const timer = useRef<number | NodeJS.Timeout | null>(null); // Timer to delay hiding dropzone
+
+    // This squelches the warning about XAxis and YAxis default props
+    // see: https://github.com/recharts/recharts/issues/3615
+    const error = console.error;
+    console.error = (...args: any) => {
+        if (/defaultProps/.test(args[0])) return;
+        error(...args);
+    };
 
     
     /* Update the height to make our graph responsive to changes in window size */
@@ -93,7 +97,7 @@ export function SparamGraph({sparams, setSparams}: SparamGraphProps) {
     };
 
     /* Handle rejected file types */
-    const handleReject = (files: File[]) => {
+    const handleReject = (files: FileRejection[]) => {
         console.log('rejected files', files);
         setDropzoneVisible(false); // Hide dropzone if file is rejected
     };
@@ -103,14 +107,20 @@ export function SparamGraph({sparams, setSparams}: SparamGraphProps) {
         if (!dropzoneVisible) {
             setDropzoneVisible(true); // Set dropzone visible when a file is dragged over
         }
-        clearTimeout(timer); // Clear any existing timer
+        if (timer.current) {
+            clearTimeout(timer.current as number); // Clear any existing timer
+        }
     };
 
     /* Handle when a dragged file leaves the window */
     const handleDragLeave = () => {
         // Delay hiding dropzone by 200 milliseconds to prevent flickering
-        timer = setTimeout(() => {
-            setDropzoneVisible(false);
+        timer.current = setTimeout(() => {
+            // FIXME: When dragging a file onto the screen and then off the screen,
+            // should the dropzone text only be turned off if sparams has data?
+            if(sparams.length > 0){
+                setDropzoneVisible(false);
+            }
         }, 100);
     };
 
@@ -127,8 +137,8 @@ export function SparamGraph({sparams, setSparams}: SparamGraphProps) {
                 <LineChart data={data}>
                     <Line type="monotone" dataKey="uv" stroke="#8884d8" />
                     <CartesianGrid stroke="#ccc" />
-                    <XAxis dataKey="name" label={{ value: 'Hz', position: 'insideBottom', offset: -10 }} />
-                    <YAxis label={{ value: 'dB', angle: -90, position: 'insideLeft', offset: -20 }} />
+                    <XAxis dataKey="name" />
+                    <YAxis />
                     <Tooltip />
                 </LineChart>
             </ResponsiveContainer>
