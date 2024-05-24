@@ -48,8 +48,16 @@ export function Aside({sparams, setSparams}: AsideProps) {
     return (
         <AppShell.Aside>
             <div className={classes.aside}>
-                {files.map((f) => {
-                    return <FileOptions fname={f.fname} sparams={f.snames} />
+                {files.map((f, idx) => {
+                    return (
+                        <FileOptions 
+                            key={`${f.fname}-${idx}`}
+                            sparams={sparams} 
+                            setSparams={setSparams} 
+                            fname={f.fname} 
+                            snames={f.snames} 
+                        />
+                    )
                 })}
             </div>
         </AppShell.Aside>

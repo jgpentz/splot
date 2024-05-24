@@ -16,7 +16,6 @@ export interface SparamData {
   [filename: string]: DataSet;
 }
 
-
 export function SparamsPage() {
     const [navCollapsed, { toggle: toggleNav }] = useDisclosure(false);
     const [sparams, setSparams] = useState<Record<string, SparamData>>({});

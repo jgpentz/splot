@@ -31,10 +31,13 @@
 
 .HeaderText, .SparamText {
     margin-top: rem(4px);
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .CollapsedGroup {
     margin-top: rem(5px);
     margin-bottom: rem(5px);
 }
-

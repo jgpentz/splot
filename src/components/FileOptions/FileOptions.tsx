@@ -1,7 +1,8 @@
-import { ActionIcon, Box, Collapse, Grid, Group, Text, UnstyledButton } from "@mantine/core";
-import { useState } from "react"
+import { ActionIcon, Box, Collapse, Grid, Group, Text, Tooltip, UnstyledButton } from "@mantine/core";
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react"
 import classes from './FileOptions.module.css'; // Import your CSS module for styling
 import { TbBorderStyle, TbBorderStyle2, TbChevronDown, TbChevronRight, TbEye, TbEyeClosed, TbMathXDivideY, TbMathXDivideY2, TbTrash, TbTriangle } from "react-icons/tb";
+import { SparamData } from "@/pages/Sparams.page";
 
 // Interface to define what an sparam should contain
 interface sparam {
@@ -10,17 +11,30 @@ interface sparam {
 
 // Interface to define the props for the FileOptions component
 interface FileOptionsProps {
+    sparams: Record<string, SparamData>;
+    setSparams: Dispatch<SetStateAction<Record<string, SparamData>>>;
     fname: string;
-    sparams: string[];
+    snames: string[];
 }
 
-export default function FileOptions({ fname, sparams }: FileOptionsProps) {
-    const [opened, setOpened] = useState(true)
-    const [visible, setVisible] = useState(true)
+export default function FileOptions({ sparams, setSparams, fname, snames }: FileOptionsProps) {
+    const [opened, setOpened] = useState(true);
+    const [visible, setVisible] = useState(true);
+    const [showTooltip, setShowTooltip] = useState(false);
+    const textRef = useRef<HTMLParagraphElement>(null);
+
+    /* Check if the filename is overflowing so that we can provide a tooltip */
+    useEffect(() => {
+        const textElement = textRef.current;
+        if (textElement) {
+            setShowTooltip(textElement?.offsetWidth < textElement?.scrollWidth);
+        }
+    }, [fname]);
+
 
     // Map through sparams to create options for each s param contained in the file
-    const items = sparams.map((sparam, index) => (
-        <Grid  key={`${sparam}-${index}`} className={classes.Sparams} columns={20}>
+    const items = snames.map((snames, index) => (
+        <Grid  key={`${snames}-${index}`} className={classes.Sparams} columns={20}>
             <Grid.Col span={3}></Grid.Col>
             {/* Toggle visibility */}
             <Grid.Col span={3}>
@@ -33,7 +47,7 @@ export default function FileOptions({ fname, sparams }: FileOptionsProps) {
                 </ActionIcon>
             </Grid.Col>
             {/* S param name */}
-            <Grid.Col span={5} className={classes.SparamText}>{sparam}</Grid.Col>
+            <Grid.Col span={5} className={classes.SparamText}>{snames}</Grid.Col>
             {/* Select line style */}
             <Grid.Col span={3}>
                 <ActionIcon className={classes.Icon} variant="transparent" onClick={() => setVisible((o) => !o)}>
@@ -68,7 +82,15 @@ export default function FileOptions({ fname, sparams }: FileOptionsProps) {
                     </ActionIcon>
                 </Grid.Col>
                 {/* Filename */}
-                <Grid.Col span={8} className={classes.HeaderText}>{fname}</Grid.Col>
+                <Grid.Col span={8}>
+                    {showTooltip ? (
+                        <Tooltip label={fname} withArrow>
+                            <Text ref={textRef} className={classes.HeaderText}>{fname}</Text>
+                        </Tooltip>
+                    ) :(
+                        <Text ref={textRef} className={classes.HeaderText}>{fname}</Text>
+                    )}
+                </Grid.Col>
                 {/* Do some math */}
                 <Grid.Col span={3}>
                     <ActionIcon className={classes.Icon} variant="transparent" onClick={() => setVisible((o) => !o)}>

@@ -4,7 +4,7 @@ import { Dropzone, FileRejection } from '@mantine/dropzone';
 import { CartesianGrid, Line, LineChart, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import { TbFileUpload, TbGraph, TbX } from 'react-icons/tb';
 import classes from './SparamGraph.module.css';
-import { SparamData } from '@/pages/Sparams.page';
+import { DataSet, SparamData } from '@/pages/Sparams.page';
 
 const data = [
     { name: 'Page A', uv: 400, pv: 2400, amt: 2400 },
@@ -80,7 +80,7 @@ export function SparamGraph({sparams, setSparams}: SparamGraphProps) {
                 throw new Error('Network response was not ok');
             }
 
-            const responseData: SparamData = await response.json();
+            const responseData: Record<string, SparamData> = await response.json();
             console.log('Successfully sent data to the backend', responseData);
 
             // Append the new sparams data
