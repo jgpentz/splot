@@ -150,7 +150,7 @@ export function SparamGraph({sparams, setSparams}: SparamGraphProps) {
         timer.current = setTimeout(() => {
             // FIXME: When dragging a file onto the screen and then off the screen,
             // should the dropzone text only be turned off if sparams has data?
-            if(sparams.length > 0){
+            if(Object.keys(sparams).length !== 0){
                 setDropzoneVisible(false);
             }
         }, 100);
@@ -168,12 +168,12 @@ export function SparamGraph({sparams, setSparams}: SparamGraphProps) {
         >
             <ResponsiveContainer>
                 <LineChart>
-                    <CartesianGrid stroke="#ccc" />
+                    <CartesianGrid  strokeDasharray="3 3" />
                     <XAxis dataKey="frequency" type="number" allowDuplicatedCategory={false} />
                     <YAxis dataKey="value" />
                     <Tooltip />
                     {lineData.map((s) => (
-                        <Line dataKey="value" data={s.data} name={s.name} key={s.name} />
+                        <Line dataKey="value" data={s.data} name={s.name} key={s.name} dot={false} />
                     ))}
                 </LineChart>
             </ResponsiveContainer>
