@@ -17,8 +17,8 @@ const data = [
 
 
 interface SparamGraphProps {
-    sparams: SparamData[];
-    setSparams: Dispatch<SetStateAction<SparamData[]>>;
+    sparams: Record<string, SparamData>;
+    setSparams: Dispatch<SetStateAction<Record<string, SparamData>>>;
 }
 
 export function SparamGraph({sparams, setSparams}: SparamGraphProps) {
@@ -115,7 +115,7 @@ export function SparamGraph({sparams, setSparams}: SparamGraphProps) {
             processFileData(newFiles);
         } else {
             // Have to set the dropzone back to visible if there are no sparams
-            if (sparams.length === 0) {
+            if (lineData.length === 0) {
                 setDropzoneVisible(true);
             }
         }

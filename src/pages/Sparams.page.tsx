@@ -19,8 +19,7 @@ export interface SparamData {
 
 export function SparamsPage() {
     const [navCollapsed, { toggle: toggleNav }] = useDisclosure(false);
-    const [sparams, setSparams] = useState<SparamData[]>([]);
-    console.log(sparams)
+    const [sparams, setSparams] = useState<Record<string, SparamData>>({});
 
     return (
         <AppShell
@@ -39,7 +38,7 @@ export function SparamsPage() {
             <AppShell.Main>
                 <SparamGraph sparams={sparams} setSparams={setSparams}/>
             </AppShell.Main>
-            <Aside />
+            <Aside sparams={sparams} setSparams={setSparams} />
         </AppShell>
     );
 }
