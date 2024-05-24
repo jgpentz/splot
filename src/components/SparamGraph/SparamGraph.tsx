@@ -24,6 +24,7 @@ interface SparamGraphProps {
 export function SparamGraph({sparams, setSparams}: SparamGraphProps) {
     const [dropzoneVisible, setDropzoneVisible] = useState(true); // Initially, dropzone is invisible
     const [height, setHeight] = useState(window.innerHeight * 0.85);
+    const [lineData, setLineData] = useState([]);
     const timer = useRef<number | NodeJS.Timeout | null>(null); // Timer to delay hiding dropzone
 
     // This squelches the warning about XAxis and YAxis default props
@@ -44,6 +45,21 @@ export function SparamGraph({sparams, setSparams}: SparamGraphProps) {
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
     }, [window.innerHeight]);
+
+    useEffect(() => {
+        const allSObjects = [];
+
+        for (const filename in sparams) {
+            const fileData = sparams[filename];
+            for (const key in fileData) {
+                if (key.startsWith('s')) {
+                    allSObjects.push(fileData[key])
+                }
+            }
+        }
+
+        setLineData(allSObjects);
+    }, [sparams]);
 
     // Send the new files to the backend for processing
     const processFileData = async (files: File[]) => {
@@ -140,6 +156,7 @@ export function SparamGraph({sparams, setSparams}: SparamGraphProps) {
         }, 100);
     };
 
+
     return (
         <Container
             fluid
@@ -150,12 +167,14 @@ export function SparamGraph({sparams, setSparams}: SparamGraphProps) {
             onDragLeave={handleDragLeave} // Add drag leave event listener
         >
             <ResponsiveContainer>
-                <LineChart data={data}>
-                    <Line type="monotone" dataKey="uv" stroke="#8884d8" />
+                <LineChart>
                     <CartesianGrid stroke="#ccc" />
-                    <XAxis dataKey="name" />
-                    <YAxis />
+                    <XAxis dataKey="frequency" type="number" allowDuplicatedCategory={false} />
+                    <YAxis dataKey="value" />
                     <Tooltip />
+                    {lineData.map((s) => (
+                        <Line dataKey="value" data={s.data} name={s.name} key={s.name} />
+                    ))}
                 </LineChart>
             </ResponsiveContainer>
 
