@@ -24,7 +24,7 @@ interface SparamGraphProps {
 export function SparamGraph({sparams, setSparams}: SparamGraphProps) {
     const [dropzoneVisible, setDropzoneVisible] = useState(true); // Initially, dropzone is invisible
     const [height, setHeight] = useState(window.innerHeight * 0.85);
-    const [lineData, setLineData] = useState([]);
+    const [lineData, setLineData] = useState<any[]>([]);
     const timer = useRef<number | NodeJS.Timeout | null>(null); // Timer to delay hiding dropzone
 
     // This squelches the warning about XAxis and YAxis default props
