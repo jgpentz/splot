@@ -63,7 +63,7 @@ export default function FileOptions({ sparams, setSparams, fname, snames }: File
             {/* Toggle visibility */}
             <Grid.Col span={3}>
                 <ActionIcon className={classes.Icon} variant="transparent" onClick={() => toggleHide(sname)}>
-                    {sparams[fname][sname].hide ? (
+                    {sparams[fname] && sparams[fname][sname].hide ? (
                         <TbEyeClosed color="black" size="1.5em"/>
                     ) : (
                         <TbEye color="black" size="1.5em"/> 
@@ -123,7 +123,7 @@ export default function FileOptions({ sparams, setSparams, fname, snames }: File
                 </Grid.Col>
                 {/* Delete this file */}
                 <Grid.Col span={3}>
-                    <ActionIcon className={classes.Icon} variant="transparent" onClick={deleteFile}>
+                    <ActionIcon className={classes.Icon} variant="transparent" onClick={() => deleteFile()}>
                         <TbTrash color="black" size="1.5em"/> 
                     </ActionIcon>
                 </Grid.Col>
