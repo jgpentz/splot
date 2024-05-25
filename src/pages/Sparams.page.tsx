@@ -20,7 +20,6 @@ export function SparamsPage() {
     const [navCollapsed, { toggle: toggleNav }] = useDisclosure(false);
     const [sparams, setSparams] = useState<Record<string, SparamData>>({});
 
-    console.log(sparams)
     return (
         <AppShell
             navbar={{

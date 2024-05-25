@@ -4,7 +4,7 @@ import { Dropzone, FileRejection } from '@mantine/dropzone';
 import { CartesianGrid, Line, LineChart, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import { TbFileUpload, TbGraph, TbX } from 'react-icons/tb';
 import classes from './SparamGraph.module.css';
-import { DataSet, SparamData } from '@/pages/Sparams.page';
+import { SparamData } from '@/pages/Sparams.page';
 
 interface SparamGraphProps {
     sparams: Record<string, SparamData>;
@@ -50,7 +50,6 @@ export function SparamGraph({sparams, setSparams}: SparamGraphProps) {
         }
 
         setLineData(allSObjects);
-        console.log(allSObjects)
     }, [sparams]);
 
     // Send the new files to the backend for processing

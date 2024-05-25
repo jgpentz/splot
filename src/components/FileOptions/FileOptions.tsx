@@ -39,36 +39,39 @@ export default function FileOptions({ sparams, setSparams, fname, snames }: File
         });
     });
 
-    const hideFile = (() => {
-        setVisible((o) => !o)
+    const toggleHide = (sname?: string) => {
         setSparams(prevSparams => {
             const updatedFileData = { ...prevSparams[fname] };
-            for (const key in updatedFileData) {
-                if (key.startsWith('s')) {
-                    updatedFileData[key].hide = !updatedFileData[key].hide;
+            if (sname) {
+                updatedFileData[sname].hide = !updatedFileData[sname].hide;
+            } else {
+                setVisible((o) => !o)
+                for (const key in updatedFileData) {
+                    if (key.startsWith('s')) {
+                        updatedFileData[key].hide = visible;
+                    }
                 }
             }
-
             return { ...prevSparams, [fname]: updatedFileData}
-        })
-    })
+        });
+    };
 
     // Map through sparams to create options for each s param contained in the file
-    const items = snames.map((snames, index) => (
-        <Grid  key={`${snames}-${index}`} className={classes.Sparams} columns={20}>
+    const items = snames.map((sname, index) => (
+        <Grid  key={`${sname}-${index}`} className={classes.Sparams} columns={20}>
             <Grid.Col span={3}></Grid.Col>
             {/* Toggle visibility */}
             <Grid.Col span={3}>
-                <ActionIcon className={classes.Icon} variant="transparent" onClick={() => setVisible((o) => !o)}>
-                    {visible ? (
-                        <TbEye color="black" size="1.5em"/> 
-                    ) : (
+                <ActionIcon className={classes.Icon} variant="transparent" onClick={() => toggleHide(sname)}>
+                    {sparams[fname][sname].hide ? (
                         <TbEyeClosed color="black" size="1.5em"/>
+                    ) : (
+                        <TbEye color="black" size="1.5em"/> 
                     )}
                 </ActionIcon>
             </Grid.Col>
             {/* S param name */}
-            <Grid.Col span={5} className={classes.SparamText}>{snames}</Grid.Col>
+            <Grid.Col span={5} className={classes.SparamText}>{sname}</Grid.Col>
             {/* Select line style */}
             <Grid.Col span={3}>
                 <ActionIcon className={classes.Icon} variant="transparent" onClick={() => setVisible((o) => !o)}>
@@ -93,7 +96,7 @@ export default function FileOptions({ sparams, setSparams, fname, snames }: File
                     <ActionIcon 
                         className={`${classes.Icon} ${classes.HeaderFirstIcon}`} 
                         variant="transparent" 
-                        onClick={hideFile}
+                        onClick={() => toggleHide()}
                     >
                         {visible ? (
                             <TbEye color="black" size="1.5em"/> 
