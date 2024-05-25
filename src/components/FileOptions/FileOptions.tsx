@@ -31,6 +31,27 @@ export default function FileOptions({ sparams, setSparams, fname, snames }: File
         }
     }, [fname]);
 
+    const deleteFile = (() => {
+        // Append the new sparams data
+        setSparams(prevSparams => {
+            const { [fname]: _, ...newSparams } = prevSparams;
+            return newSparams; 
+        });
+    });
+
+    const hideFile = (() => {
+        setVisible((o) => !o)
+        setSparams(prevSparams => {
+            const updatedFileData = { ...prevSparams[fname] };
+            for (const key in updatedFileData) {
+                if (key.startsWith('s')) {
+                    updatedFileData[key].hide = !updatedFileData[key].hide;
+                }
+            }
+
+            return { ...prevSparams, [fname]: updatedFileData}
+        })
+    })
 
     // Map through sparams to create options for each s param contained in the file
     const items = snames.map((snames, index) => (
@@ -72,7 +93,7 @@ export default function FileOptions({ sparams, setSparams, fname, snames }: File
                     <ActionIcon 
                         className={`${classes.Icon} ${classes.HeaderFirstIcon}`} 
                         variant="transparent" 
-                        onClick={() => setVisible((o) => !o)}
+                        onClick={hideFile}
                     >
                         {visible ? (
                             <TbEye color="black" size="1.5em"/> 
@@ -94,21 +115,13 @@ export default function FileOptions({ sparams, setSparams, fname, snames }: File
                 {/* Do some math */}
                 <Grid.Col span={3}>
                     <ActionIcon className={classes.Icon} variant="transparent" onClick={() => setVisible((o) => !o)}>
-                        {visible ? (
-                            <TbMathXDivideY2 color="black" size="1.5em"/> 
-                        ) : (
-                            <TbMathXDivideY2 color="black" size="1.5em"/>
-                        )}
+                        <TbMathXDivideY2 color="black" size="1.5em"/> 
                     </ActionIcon>
                 </Grid.Col>
                 {/* Delete this file */}
                 <Grid.Col span={3}>
-                    <ActionIcon className={classes.Icon} variant="transparent" onClick={() => setVisible((o) => !o)}>
-                        {visible ? (
-                            <TbTrash color="black" size="1.5em"/> 
-                        ) : (
-                            <TbTrash color="black" size="1.5em"/>
-                        )}
+                    <ActionIcon className={classes.Icon} variant="transparent" onClick={deleteFile}>
+                        <TbTrash color="black" size="1.5em"/> 
                     </ActionIcon>
                 </Grid.Col>
                 {/* Collapse/expand the options for this file */}

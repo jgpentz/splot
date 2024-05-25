@@ -6,16 +6,6 @@ import { TbFileUpload, TbGraph, TbX } from 'react-icons/tb';
 import classes from './SparamGraph.module.css';
 import { DataSet, SparamData } from '@/pages/Sparams.page';
 
-const data = [
-    { name: 'Page A', uv: 400, pv: 2400, amt: 2400 },
-    { name: 'Page B', uv: 300, pv: 2400, amt: 2400 },
-    { name: 'Page C', uv: 300, pv: 2400, amt: 2400 },
-    { name: 'Page D', uv: 200, pv: 2400, amt: 2400 },
-    { name: 'Page E', uv: 300, pv: 2400, amt: 2400 },
-    { name: 'Page F', uv: 270, pv: 2400, amt: 2400 },
-];
-
-
 interface SparamGraphProps {
     sparams: Record<string, SparamData>;
     setSparams: Dispatch<SetStateAction<Record<string, SparamData>>>;
@@ -46,6 +36,7 @@ export function SparamGraph({sparams, setSparams}: SparamGraphProps) {
         return () => window.removeEventListener('resize', handleResize);
     }, [window.innerHeight]);
 
+    /* Assign all of the sparams to an array of lines to plot */
     useEffect(() => {
         const allSObjects = [];
 
@@ -59,6 +50,7 @@ export function SparamGraph({sparams, setSparams}: SparamGraphProps) {
         }
 
         setLineData(allSObjects);
+        console.log(allSObjects)
     }, [sparams]);
 
     // Send the new files to the backend for processing
@@ -173,7 +165,7 @@ export function SparamGraph({sparams, setSparams}: SparamGraphProps) {
                     <YAxis dataKey="value" />
                     <Tooltip />
                     {lineData.map((s) => (
-                        <Line dataKey="value" data={s.data} name={s.name} key={s.name} dot={false} />
+                        <Line key={s.name} dataKey="value" data={s.data} name={s.name} hide={s.hide} dot={false} />
                     ))}
                 </LineChart>
             </ResponsiveContainer>

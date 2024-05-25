@@ -6,20 +6,21 @@ import { useDisclosure, } from '@mantine/hooks';
 import { useState } from 'react';
 
 export interface DataSet {
-  m: number[];
-  n: number[];
-  frequency: number[];
-  [key: string]: number[] | number[][];
+    m: number[];
+    n: number[];
+    frequency: number[];
+    [key: string]: number[] | number[][] | boolean;
 }
 
 export interface SparamData {
-  [filename: string]: DataSet;
+    [filename: string]: DataSet;
 }
 
 export function SparamsPage() {
     const [navCollapsed, { toggle: toggleNav }] = useDisclosure(false);
     const [sparams, setSparams] = useState<Record<string, SparamData>>({});
 
+    console.log(sparams)
     return (
         <AppShell
             navbar={{
