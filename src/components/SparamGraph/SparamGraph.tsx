@@ -49,6 +49,10 @@ export function SparamGraph({sparams, setSparams}: SparamGraphProps) {
             }
         }
 
+        if (allSObjects.length === 0) {
+            setDropzoneVisible(true);
+        }
+
         setLineData(allSObjects);
     }, [sparams]);
 
@@ -146,7 +150,6 @@ export function SparamGraph({sparams, setSparams}: SparamGraphProps) {
             }
         }, 100);
     };
-
 
     return (
         <Container
