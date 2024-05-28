@@ -2,7 +2,7 @@ import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { AppShell, Flex } from '@mantine/core';
 import classes from './Aside.module.css'; // Import your CSS module for styling
 import FileOptions from '../FileOptions/FileOptions';
-import { SparamData } from '@/pages/Sparams.page';
+import { SparamFiles } from '@/pages/Sparams.page';
 
 interface FileDescriptor {
     fname: string;
@@ -10,8 +10,8 @@ interface FileDescriptor {
 }
 
 interface AsideProps {
-    sparams: Record<string, SparamData>;
-    setSparams: Dispatch<SetStateAction<Record<string, SparamData>>>;
+    sparams: Record<string, SparamFiles>;
+    setSparams: Dispatch<SetStateAction<Record<string, SparamFiles>>>;
 }
 
 export function Aside({sparams, setSparams}: AsideProps) {

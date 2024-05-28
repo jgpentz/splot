@@ -1,21 +1,58 @@
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
-import { Container, Group, Text, rem } from '@mantine/core';
+import { Box, Container, Group, Text, rem } from '@mantine/core';
 import { Dropzone, FileRejection } from '@mantine/dropzone';
 import { CartesianGrid, Line, LineChart, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import { TbFileUpload, TbGraph, TbX } from 'react-icons/tb';
 import classes from './SparamGraph.module.css';
-import { SparamData } from '@/pages/Sparams.page';
+import { DataSet, SGraphDataLiteral, SparamFiles } from '@/pages/Sparams.page';
 
 interface SparamGraphProps {
-    sparams: Record<string, SparamData>;
-    setSparams: Dispatch<SetStateAction<Record<string, SparamData>>>;
+    sparams: Record<string, SparamFiles>;
+    setSparams: Dispatch<SetStateAction<Record<string, SparamFiles>>>;
 }
 
 export function SparamGraph({sparams, setSparams}: SparamGraphProps) {
     const [dropzoneVisible, setDropzoneVisible] = useState(true); // Initially, dropzone is invisible
     const [height, setHeight] = useState(window.innerHeight * 0.85);
     const [lineData, setLineData] = useState<any[]>([]);
+    const [dummyData, setDummyData] = useState<SGraphDataLiteral>({
+        name: 'DummyData.s2p',
+        hide: false,
+        data: [
+            {frequency: 0, value: Math.random() * 50},
+            {frequency: 2, value: Math.random() * 50},
+            {frequency: 4, value: Math.random() * 50},
+            {frequency: 6, value: Math.random() * 50},
+            {frequency: 8, value: Math.random() * 50},
+            {frequency: 10, value: Math.random() * 50},
+        ]
+    })
     const timer = useRef<number | NodeJS.Timeout | null>(null); // Timer to delay hiding dropzone
+    const dummyDataTimer = useRef<number | NodeJS.Timeout | null>(null); // Timer to delay hiding dropzone
+
+    // Effect to regenerate random values every 3 seconds when lineData is empty
+    useEffect(() => {
+        if (lineData.length === 0) {
+            dummyDataTimer.current = setInterval(() => {
+                regenerateRandomValues();
+            }, 3000);
+        } else {
+            clearInterval(dummyDataTimer.current as number);
+        }
+
+        return () => {
+            clearInterval(dummyDataTimer.current as number);
+        };
+    }, [lineData]);
+
+    // Function to regenerate random values in DummyData.data
+    const regenerateRandomValues = () => {
+        const newData = dummyData.data.map(item => ({
+            ...item,
+            value: Math.random() * 50
+        }));
+        setDummyData(prev => ({ ...prev, data: newData })); // Update DummyData state
+    };
 
     // This squelches the warning about XAxis and YAxis default props
     // see: https://github.com/recharts/recharts/issues/3615
@@ -38,7 +75,7 @@ export function SparamGraph({sparams, setSparams}: SparamGraphProps) {
 
     /* Assign all of the sparams to an array of lines to plot */
     useEffect(() => {
-        const allSObjects = [];
+        const allSObjects: DataSet[] = [];
 
         for (const filename in sparams) {
             const fileData = sparams[filename];
@@ -53,6 +90,7 @@ export function SparamGraph({sparams, setSparams}: SparamGraphProps) {
             setDropzoneVisible(true);
         }
 
+        console.log(allSObjects)
         setLineData(allSObjects);
     }, [sparams]);
 
@@ -75,7 +113,7 @@ export function SparamGraph({sparams, setSparams}: SparamGraphProps) {
                 throw new Error('Network response was not ok');
             }
 
-            const responseData: Record<string, SparamData> = await response.json();
+            const responseData: Record<string, SparamFiles> = await response.json();
             console.log('Successfully sent data to the backend', responseData);
 
             // Append the new sparams data
@@ -166,8 +204,13 @@ export function SparamGraph({sparams, setSparams}: SparamGraphProps) {
                     <XAxis dataKey="frequency" type="number" allowDuplicatedCategory={false} />
                     <YAxis dataKey="value" />
                     <Tooltip />
-                    {lineData.map((s) => (
-                        <Line key={s.name} dataKey="value" data={s.data} name={s.name} hide={s.hide} dot={false} />
+                    {lineData.length === 0 ? 
+                    (
+                        <Line key={"DummyData"} dataKey="value" data={dummyData.data} name={dummyData.name} hide={dummyData.hide} dot={false} />
+                    ) : ( 
+                        lineData.map((s) => (
+                            <Line key={s.name} dataKey="value" data={s.data} name={s.name} hide={s.hide} dot={false} />
+                        )
                     ))}
                 </LineChart>
             </ResponsiveContainer>

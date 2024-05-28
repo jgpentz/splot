@@ -2,7 +2,7 @@ import { ActionIcon, Box, Collapse, Grid, Group, Text, Tooltip, UnstyledButton }
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react"
 import classes from './FileOptions.module.css'; // Import your CSS module for styling
 import { TbBorderStyle, TbBorderStyle2, TbChevronDown, TbChevronRight, TbEye, TbEyeClosed, TbMathXDivideY, TbMathXDivideY2, TbTrash, TbTriangle } from "react-icons/tb";
-import { SparamData } from "@/pages/Sparams.page";
+import { SGraphDataLiteral, SparamFiles } from "@/pages/Sparams.page";
 
 // Interface to define what an sparam should contain
 interface sparam {
@@ -11,8 +11,8 @@ interface sparam {
 
 // Interface to define the props for the FileOptions component
 interface FileOptionsProps {
-    sparams: Record<string, SparamData>;
-    setSparams: Dispatch<SetStateAction<Record<string, SparamData>>>;
+    sparams: Record<string, SparamFiles>;
+    setSparams: Dispatch<SetStateAction<Record<string, SparamFiles>>>;
     fname: string;
     snames: string[];
 }
@@ -38,23 +38,27 @@ export default function FileOptions({ sparams, setSparams, fname, snames }: File
             return newSparams; 
         });
     });
+const toggleHide = (sname?: string) => {
+    setSparams(prevSparams => {
+        const updatedFileData = { ...prevSparams[fname] };
 
-    const toggleHide = (sname?: string) => {
-        setSparams(prevSparams => {
-            const updatedFileData = { ...prevSparams[fname] };
-            if (sname) {
-                updatedFileData[sname].hide = !updatedFileData[sname].hide;
-            } else {
-                setVisible((o) => !o)
-                for (const key in updatedFileData) {
-                    if (key.startsWith('s')) {
-                        updatedFileData[key].hide = visible;
-                    }
+        // Have to cast to unknown first before casting to GraphData Literal
+        // because the TypeScript compiler doesn't understand that
+        // updatedFileData is of type DataSet.  It thinks it has type SparamFiles
+        if (sname) {
+            (updatedFileData[sname] as unknown as SGraphDataLiteral).hide = !(updatedFileData[sname] as unknown as SGraphDataLiteral).hide;
+        } else {
+            setVisible((o) => !o);
+            for (const key in updatedFileData) {
+                if (key.startsWith('s')) {
+                    // Ensure updatedFileData[key] is treated as a GraphLiteral
+                    (updatedFileData[key] as unknown as SGraphDataLiteral).hide = visible;
                 }
             }
-            return { ...prevSparams, [fname]: updatedFileData}
-        });
-    };
+        }
+        return { ...prevSparams, [fname]: updatedFileData };
+    });
+};
 
     // Map through sparams to create options for each s param contained in the file
     const items = snames.map((sname, index) => (

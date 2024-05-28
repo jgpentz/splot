@@ -5,20 +5,33 @@ import { AppShell } from '@mantine/core';
 import { useDisclosure, } from '@mantine/hooks';
 import { useState } from 'react';
 
+export interface SGraphDataPoint {
+    frequency: number;
+    value: number;
+}
+
+export interface SGraphDataLiteral{
+    name: string;
+    hide: boolean;
+    data: SGraphDataPoint[];
+}
+
 export interface DataSet {
     m: number[];
     n: number[];
     frequency: number[];
-    [key: string]: number[] | number[][] | boolean;
+    [key: string]: SGraphDataLiteral |  number[];
 }
 
-export interface SparamData {
+export interface SparamFiles {
     [filename: string]: DataSet;
 }
 
+
 export function SparamsPage() {
     const [navCollapsed, { toggle: toggleNav }] = useDisclosure(false);
-    const [sparams, setSparams] = useState<Record<string, SparamData>>({});
+    const [sparams, setSparams] = useState<Record<string, SparamFiles>>({});
+console.log(sparams)
 
     return (
         <AppShell
