@@ -1,10 +1,23 @@
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
 import { Box, Container, Group, Text, rem } from '@mantine/core';
 import { Dropzone, FileRejection } from '@mantine/dropzone';
-import { CartesianGrid, Line, LineChart, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
+import { CartesianGrid, Line, LineChart, XAxis, YAxis, Tooltip, ResponsiveContainer, Label, Legend } from 'recharts';
 import { TbFileUpload, TbGraph, TbX } from 'react-icons/tb';
 import classes from './SparamGraph.module.css';
 import { DataSet, SGraphDataLiteral, SparamFiles } from '@/pages/Sparams.page';
+
+// Color-blind friendly color palette
+const okabe_ito_colors: string[] = [
+    "#000000", // Black
+    "#E69F00", // Light orange
+    "#56B4E9", // Light blue
+    "#009E73", // Green
+    "#F0E442", // Yellow
+    "#0072B2", // Dark blue
+    "#D55E00", // Dark orange
+    "#CC79A7", // Pink
+
+]
 
 interface SparamGraphProps {
     sparams: Record<string, SparamFiles>;
@@ -18,6 +31,7 @@ export function SparamGraph({sparams, setSparams}: SparamGraphProps) {
     const [dummyData, setDummyData] = useState<SGraphDataLiteral>({
         name: 'DummyData.s2p',
         hide: false,
+        color: okabe_ito_colors[0],
         data: [
             {frequency: 0, value: Math.random() * 50},
             {frequency: 2, value: Math.random() * 50},
@@ -30,7 +44,15 @@ export function SparamGraph({sparams, setSparams}: SparamGraphProps) {
     const timer = useRef<number | NodeJS.Timeout | null>(null); // Timer to delay hiding dropzone
     const dummyDataTimer = useRef<number | NodeJS.Timeout | null>(null); // Timer to delay hiding dropzone
 
-    // Effect to regenerate random values every 3 seconds when lineData is empty
+    // This squelches the warning about XAxis and YAxis default props
+    // see: https://github.com/recharts/recharts/issues/3615
+    const error = console.error;
+    console.error = (...args: any) => {
+        if (/defaultProps/.test(args[0])) return;
+        error(...args);
+    };
+
+    /* Effect to regenerate random values every 3 seconds when lineData is empty */
     useEffect(() => {
         if (lineData.length === 0) {
             dummyDataTimer.current = setInterval(() => {
@@ -45,7 +67,7 @@ export function SparamGraph({sparams, setSparams}: SparamGraphProps) {
         };
     }, [lineData]);
 
-    // Function to regenerate random values in DummyData.data
+    /* Function to regenerate random values in DummyData.data */
     const regenerateRandomValues = () => {
         const newData = dummyData.data.map(item => ({
             ...item,
@@ -54,15 +76,6 @@ export function SparamGraph({sparams, setSparams}: SparamGraphProps) {
         setDummyData(prev => ({ ...prev, data: newData })); // Update DummyData state
     };
 
-    // This squelches the warning about XAxis and YAxis default props
-    // see: https://github.com/recharts/recharts/issues/3615
-    const error = console.error;
-    console.error = (...args: any) => {
-        if (/defaultProps/.test(args[0])) return;
-        error(...args);
-    };
-
-    
     /* Update the height to make our graph responsive to changes in window size */
     useEffect(() => {
         const handleResize = () => {
@@ -77,11 +90,15 @@ export function SparamGraph({sparams, setSparams}: SparamGraphProps) {
     useEffect(() => {
         const allSObjects: DataSet[] = [];
 
+        let i = 0;
         for (const filename in sparams) {
             const fileData = sparams[filename];
             for (const key in fileData) {
                 if (key.startsWith('s')) {
+                    // Assign the line color and then append it to the lineData list
+                    (fileData[key] as any).color = okabe_ito_colors[i % okabe_ito_colors.length]
                     allSObjects.push(fileData[key])
+                    i += 1
                 }
             }
         }
@@ -90,7 +107,6 @@ export function SparamGraph({sparams, setSparams}: SparamGraphProps) {
             setDropzoneVisible(true);
         }
 
-        console.log(allSObjects)
         setLineData(allSObjects);
     }, [sparams]);
 
@@ -201,15 +217,43 @@ export function SparamGraph({sparams, setSparams}: SparamGraphProps) {
             <ResponsiveContainer>
                 <LineChart>
                     <CartesianGrid  strokeDasharray="3 3" />
-                    <XAxis dataKey="frequency" type="number" allowDuplicatedCategory={false} />
-                    <YAxis dataKey="value" />
-                    <Tooltip />
+                    <XAxis 
+                        dataKey="frequency" 
+                        type="number" 
+                        allowDuplicatedCategory={false} 
+                        height={50}
+                    >
+                        <Label value="GHz" offset={0} position="insideBottom" fontSize={20} />
+                    </XAxis>
+                    <YAxis 
+                        dataKey="value" 
+                    >
+                        <Label value="dB" angle={-90} position="insideLeft" fontSize={20} />
+                    </YAxis>
+                    <Legend />
+                    <Tooltip offset={50} />
+                    {/* When there is no data in the lineData array, display dummy data*/}
                     {lineData.length === 0 ? 
                     (
-                        <Line key={"DummyData"} dataKey="value" data={dummyData.data} name={dummyData.name} hide={dummyData.hide} dot={false} />
+                        <Line 
+                            key={"DummyData"} 
+                            dataKey="value" 
+                            data={dummyData.data} 
+                            name={dummyData.name} 
+                            hide={dummyData.hide} 
+                            dot={false} 
+                        />
                     ) : ( 
                         lineData.map((s) => (
-                            <Line key={s.name} dataKey="value" data={s.data} name={s.name} hide={s.hide} dot={false} />
+                            <Line 
+                                key={s.name} 
+                                dataKey="value" 
+                                data={s.data} 
+                                name={s.name} 
+                                hide={s.hide} 
+                                dot={false} 
+                                stroke={s.color}
+                            />
                         )
                     ))}
                 </LineChart>

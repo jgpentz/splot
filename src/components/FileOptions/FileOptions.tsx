@@ -79,7 +79,7 @@ const toggleHide = (sname?: string) => {
             {/* Select line style */}
             <Grid.Col span={3}>
                 <ActionIcon className={classes.Icon} variant="transparent" onClick={() => setVisible((o) => !o)}>
-                    <TbBorderStyle2 color="black" size="1.5em"/> 
+                    <TbBorderStyle2 color={sparams[fname] && (sparams[fname][sname] as any).color} size="1.5em"/> 
                 </ActionIcon>
             </Grid.Col>
             {/* Normalize to this sparam */}

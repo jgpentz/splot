@@ -13,6 +13,7 @@ export interface SGraphDataPoint {
 export interface SGraphDataLiteral{
     name: string;
     hide: boolean;
+    color: string
     data: SGraphDataPoint[];
 }
 
