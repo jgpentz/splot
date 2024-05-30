@@ -231,7 +231,7 @@ export function SparamGraph({sparams, setSparams}: SparamGraphProps) {
                         <Label value="dB" angle={-90} position="insideLeft" fontSize={20} />
                     </YAxis>
                     <Legend />
-                    <Tooltip offset={50} />
+                    <Tooltip offset={50} labelFormatter={(value) => `${value} GHz`}/>
                     {/* When there is no data in the lineData array, display dummy data*/}
                     {lineData.length === 0 ? 
                     (
