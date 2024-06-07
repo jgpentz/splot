@@ -5,7 +5,6 @@ import { CartesianGrid, Line, LineChart, XAxis, YAxis, Tooltip, ResponsiveContai
 import { TbFileUpload, TbGraph, TbX } from 'react-icons/tb';
 import classes from './SparamGraph.module.css';
 import { DataSet, SGraphDataLiteral, SparamFiles } from '@/pages/Sparams.page';
-import { toPng } from 'html-to-image'
 import { DownloadButton } from '../DownloadButton/DownloadButton';
 
 // Color-blind friendly color palette
