@@ -1,4 +1,4 @@
-import { ActionIcon, Box, Collapse, Grid, Group, Text, Tooltip, UnstyledButton } from "@mantine/core";
+import { ActionIcon, Box, Collapse, Grid, Group, Text, TextInput, Tooltip, UnstyledButton } from "@mantine/core";
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react"
 import classes from './FileOptions.module.css'; // Import your CSS module for styling
 import { TbBorderStyle, TbBorderStyle2, TbChevronDown, TbChevronRight, TbEye, TbEyeClosed, TbMathXDivideY, TbMathXDivideY2, TbTrash, TbTriangle } from "react-icons/tb";
@@ -21,7 +21,24 @@ export default function FileOptions({ sparams, setSparams, fname, snames }: File
     const [opened, setOpened] = useState(true);
     const [visible, setVisible] = useState(true);
     const [showTooltip, setShowTooltip] = useState(false);
+    const [isEditing, setIsEditing] = useState(false);
+    const [text, setText] = useState(fname);
+    const inputRef = useRef<HTMLInputElement>(null);
     const textRef = useRef<HTMLParagraphElement>(null);
+
+    const handleTextClick = () => {
+        setIsEditing(true);
+        setTimeout(() => inputRef.current?.focus(), 0); // Focus the input field when it appears
+    };
+
+    const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setText(event.target.value);
+    };
+
+    const handleBlur = () => {
+        setIsEditing(false);
+    };
+
 
     /* Check if the filename is overflowing so that we can provide a tooltip */
     useEffect(() => {
@@ -113,10 +130,42 @@ const toggleHide = (sname?: string) => {
                 <Grid.Col span={8}>
                     {showTooltip ? (
                         <Tooltip label={fname} withArrow>
-                            <Text ref={textRef} className={classes.HeaderText}>{fname}</Text>
+                            {isEditing ? (
+                                <TextInput
+                                    ref={inputRef}
+                                    value={text}
+                                    onChange={handleInputChange}
+                                    onBlur={handleBlur}
+                                    className={classes.HeaderText}
+                                />
+                            ) : (
+                                <Text
+                                    ref={inputRef}
+                                    className={classes.HeaderText}
+                                    onClick={handleTextClick}
+                                    >
+                                    {text}
+                                </Text>
+                            )}
                         </Tooltip>
-                    ) :(
-                        <Text ref={textRef} className={classes.HeaderText}>{fname}</Text>
+                    ) : (
+                        isEditing ? (
+                            <TextInput
+                                ref={inputRef}
+                                value={text}
+                                onChange={handleInputChange}
+                                onBlur={handleBlur}
+                                className={classes.HeaderText}
+                            />
+                        ) : (
+                            <Text
+                                ref={inputRef}
+                                className={classes.HeaderText}
+                                onClick={handleTextClick}
+                                >
+                                {text}
+                            </Text>
+                        )
                     )}
                 </Grid.Col>
                 {/* Do some math */}

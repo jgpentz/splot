@@ -1,3 +1,7 @@
 :global .hidden {
     display: none;
 }
+
+.legend {
+    margin-left: 20px;
+}

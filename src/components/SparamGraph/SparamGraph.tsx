@@ -5,6 +5,8 @@ import { CartesianGrid, Line, LineChart, XAxis, YAxis, Tooltip, ResponsiveContai
 import { TbFileUpload, TbGraph, TbX } from 'react-icons/tb';
 import classes from './SparamGraph.module.css';
 import { DataSet, SGraphDataLiteral, SparamFiles } from '@/pages/Sparams.page';
+import { toPng } from 'html-to-image'
+import { DownloadButton } from '../DownloadButton/DownloadButton';
 
 // Color-blind friendly color palette
 const okabe_ito_colors: string[] = [
@@ -25,6 +27,7 @@ interface SparamGraphProps {
 }
 
 export function SparamGraph({sparams, setSparams}: SparamGraphProps) {
+    const chartRef = useRef(null);
     const [dropzoneVisible, setDropzoneVisible] = useState(true); // Initially, dropzone is invisible
     const [height, setHeight] = useState(window.innerHeight * 0.85);
     const [lineData, setLineData] = useState<any[]>([]);
@@ -208,13 +211,13 @@ export function SparamGraph({sparams, setSparams}: SparamGraphProps) {
     return (
         <Container
             fluid
-            w='90%'
+            w='100%'
             style={{ height: height }} 
             p='50'
             onDragOver={handleDragOver} // Add drag over event listener
             onDragLeave={handleDragLeave} // Add drag leave event listener
         >
-            <ResponsiveContainer>
+            <ResponsiveContainer ref={chartRef}>
                 <LineChart>
                     <CartesianGrid  strokeDasharray="3 3" />
                     <XAxis 
@@ -230,7 +233,7 @@ export function SparamGraph({sparams, setSparams}: SparamGraphProps) {
                     >
                         <Label value="dB" angle={-90} position="insideLeft" fontSize={20} />
                     </YAxis>
-                    <Legend />
+                    <Legend layout='vertical' align='right' verticalAlign='top' wrapperStyle={{ paddingLeft: "20px" }}/>
                     <Tooltip offset={50} labelFormatter={(value) => `${value} GHz`}/>
                     {/* When there is no data in the lineData array, display dummy data*/}
                     {lineData.length === 0 ? 
@@ -258,6 +261,7 @@ export function SparamGraph({sparams, setSparams}: SparamGraphProps) {
                     ))}
                 </LineChart>
             </ResponsiveContainer>
+            <DownloadButton chartRef={chartRef} />
 
             {dropzoneVisible && (
                 <Dropzone
