@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
-import { AppShell, Flex } from '@mantine/core';
+import { AppShell, Flex, ScrollArea } from '@mantine/core';
 import classes from './Aside.module.css'; // Import your CSS module for styling
 import FileOptions from '../FileOptions/FileOptions';
 import { SparamFiles } from '@/pages/Sparams.page';
@@ -47,19 +47,21 @@ export function Aside({sparams, setSparams}: AsideProps) {
 
     return (
         <AppShell.Aside>
-            <div className={classes.aside}>
-                {files.map((f, idx) => {
-                    return (
-                        <FileOptions 
-                            key={`${f.fname}-${idx}`}
-                            sparams={sparams} 
-                            setSparams={setSparams} 
-                            fname={f.fname} 
-                            snames={f.snames} 
-                        />
-                    )
-                })}
-            </div>
+            <AppShell.Section grow component={ScrollArea} scrollbars="y">
+                <div className={classes.aside}>
+                    {files.map((f, idx) => {
+                        return (
+                            <FileOptions 
+                                key={`${f.fname}-${idx}`}
+                                sparams={sparams} 
+                                setSparams={setSparams} 
+                                fname={f.fname} 
+                                snames={f.snames} 
+                            />
+                        )
+                    })}
+                </div>
+            </AppShell.Section>
         </AppShell.Aside>
     );
 }

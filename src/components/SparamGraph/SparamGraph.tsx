@@ -34,14 +34,10 @@ export function SparamGraph({sparams, setSparams}: SparamGraphProps) {
         name: 'DummyData.s2p',
         hide: false,
         color: okabe_ito_colors[0],
-        data: [
-            {frequency: 0, value: Math.random() * 50},
-            {frequency: 2, value: Math.random() * 50},
-            {frequency: 4, value: Math.random() * 50},
-            {frequency: 6, value: Math.random() * 50},
-            {frequency: 8, value: Math.random() * 50},
-            {frequency: 10, value: Math.random() * 50},
-        ]
+        data: Array.from({ length: 7 }, (_, i) => ({
+            frequency: i * 2,
+            value: Math.random() * 50
+        }))
     })
     const timer = useRef<number | NodeJS.Timeout | null>(null); // Timer to delay hiding dropzone
     const dummyDataTimer = useRef<number | NodeJS.Timeout | null>(null); // Timer to delay hiding dropzone
@@ -239,6 +235,7 @@ export function SparamGraph({sparams, setSparams}: SparamGraphProps) {
                     (
                         <Line 
                             key={"DummyData"} 
+                            type="basis"
                             dataKey="value" 
                             data={dummyData.data} 
                             name={dummyData.name} 

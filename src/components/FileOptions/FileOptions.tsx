@@ -79,7 +79,7 @@ const toggleHide = (sname?: string) => {
 
     // Map through sparams to create options for each s param contained in the file
     const items = snames.map((sname, index) => (
-        <Grid  key={`${sname}-${index}`} className={classes.Sparams} columns={20}>
+        <Grid key={`${sname}-${index}`} className={classes.Sparams} columns={20}>
             <Grid.Col span={3}></Grid.Col>
             {/* Toggle visibility */}
             <Grid.Col span={3}>
