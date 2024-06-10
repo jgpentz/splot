@@ -106,6 +106,9 @@ export function SparamGraph({sparams, setSparams}: SparamGraphProps) {
         }
 
         setLineData(allSObjects);
+        console.log("-----")
+        console.log(sparams)
+        console.log("-----")
     }, [sparams]);
 
     // Send the new files to the backend for processing

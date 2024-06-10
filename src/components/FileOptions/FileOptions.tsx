@@ -37,6 +37,22 @@ export default function FileOptions({ sparams, setSparams, fname, snames }: File
 
     const handleBlur = () => {
         setIsEditing(false);
+        setSparams((prevSparams) => {
+            const updatedSparams = { ...prevSparams };
+            const currentData = updatedSparams[fname];
+
+            // Update the name key-value pair for each key that starts with 's'
+            for (const key in currentData) {
+                if (key.startsWith('s')) {
+                    (currentData[key] as any).name = text + " " + key;  // Set the name to the new text
+                }
+            }
+
+            delete updatedSparams[fname];
+            updatedSparams[text] = currentData;
+
+            return updatedSparams
+        })
     };
 
 
@@ -140,7 +156,7 @@ const toggleHide = (sname?: string) => {
                                 />
                             ) : (
                                 <Text
-                                    ref={inputRef}
+                                    ref={textRef}
                                     className={classes.HeaderText}
                                     onClick={handleTextClick}
                                     >
@@ -159,7 +175,7 @@ const toggleHide = (sname?: string) => {
                             />
                         ) : (
                             <Text
-                                ref={inputRef}
+                                ref={textRef}
                                 className={classes.HeaderText}
                                 onClick={handleTextClick}
                                 >
