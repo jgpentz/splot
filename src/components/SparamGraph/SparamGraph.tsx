@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction, useCallback, useEffect, useRef, useState } from 'react';
-import { Box, Container, Group, Text, rem } from '@mantine/core';
+import { Box, Container, FOCUS_CLASS_NAMES, Group, Text, rem } from '@mantine/core';
 import { Dropzone, FileRejection } from '@mantine/dropzone';
 import { CartesianGrid, Line, LineChart, XAxis, YAxis, Tooltip, ResponsiveContainer, Label, Legend, Brush, ReferenceArea } from 'recharts';
 import { TbFileUpload, TbGraph, TbX } from 'react-icons/tb';
@@ -53,6 +53,7 @@ export function SparamGraph({sparams, setSparams}: SparamGraphProps) {
     })
     const timer = useRef<number | NodeJS.Timeout | null>(null); // Timer to delay hiding dropzone
     const dummyDataTimer = useRef<number | NodeJS.Timeout | null>(null); // Timer to delay hiding dropzone
+    const { refAreaLeft, refAreaRight, left, right, bottom, top } = state;
 
     // This squelches the warning about XAxis and YAxis default props
     // see: https://github.com/recharts/recharts/issues/3615
@@ -253,7 +254,6 @@ export function SparamGraph({sparams, setSparams}: SparamGraphProps) {
         lineData.forEach((line) => {
             if (line.hide === false) {
                 const refData = line.data.filter((d: SGraphDataPoint) => d.frequency >= from && d.frequency <= to);
-                console.log(from, to)
                 refData.forEach((d: any) => {
                     if (top === null || d[ref] > top) {
                         top = d[ref];
@@ -264,10 +264,6 @@ export function SparamGraph({sparams, setSparams}: SparamGraphProps) {
                 });
             }
         });
-
-        if (bottom == null || top == null) {
-            console.log(`warn: ${bottom} ${top}`)
-        }
 
         return [(bottom ?? 0)- offset, (top ?? 0) + offset];
     };
@@ -313,8 +309,30 @@ export function SparamGraph({sparams, setSparams}: SparamGraphProps) {
         setState(initialState)
     }
 
-    const { refAreaLeft, refAreaRight, left, right, bottom, top } = state;
-    console.log(`state l: ${left}, r: ${right}, b: ${bottom}, t: ${top}`)
+    /* Allow sparams to be hidden/visible from the legend */
+    const handleLegendClick = (value: string) => {
+        const fname = value.split(" ")[0]
+        const sname = value.split(" ")[1]
+
+        setSparams(prevSparams => {
+            const updatedFileData = { ...prevSparams[fname] };
+
+            // Have to cast to unknown first before casting to GraphData Literal
+            // because the TypeScript compiler doesn't understand that
+            // updatedFileData is of type DataSet.  It thinks it has type SparamFiles
+            if (sname) {
+                (updatedFileData[sname] as unknown as SGraphDataLiteral).hide = !(updatedFileData[sname] as unknown as SGraphDataLiteral).hide;
+            } else {
+                for (const key in updatedFileData) {
+                    if (key.startsWith('s')) {
+                        // Ensure updatedFileData[key] is treated as a GraphLiteral
+                        (updatedFileData[key] as unknown as SGraphDataLiteral).hide = !(updatedFileData[key] as unknown as SGraphDataLiteral).hide;
+                    }
+                }
+            }
+            return { ...prevSparams, [fname]: updatedFileData };
+        });
+    }
 
     return (
         <Container
@@ -352,7 +370,7 @@ export function SparamGraph({sparams, setSparams}: SparamGraphProps) {
                     </XAxis>
                     <YAxis 
                         dataKey="value" 
-                        domain={[bottom, top]}
+                        domain={lineData.length === 0 ? [0, 50] : [bottom, top]}
                         allowDataOverflow={left !== "dataMin"}
                         style={{ userSelect: 'none'}}
                     >
@@ -369,8 +387,11 @@ export function SparamGraph({sparams, setSparams}: SparamGraphProps) {
                         align='right' 
                         verticalAlign='top' 
                         wrapperStyle={{ paddingLeft: "20px" }}
+                        style={{ userSelect: 'none' }}
+                        onClick={props => handleLegendClick(props.value)}
                     />
-                    <Tooltip offset={50} labelFormatter={(value) => `${value} GHz`}/>
+                    <Tooltip offset={75} labelFormatter={(value) => `${value} GHz`} />
+
                     {/* When there is no data in the lineData array, display dummy data*/}
                     {lineData.length === 0 ? 
                     (
@@ -394,6 +415,7 @@ export function SparamGraph({sparams, setSparams}: SparamGraphProps) {
                                 hide={s.hide} 
                                 dot={false} 
                                 stroke={s.color}
+                                strokeWidth={2}
                                 animationDuration={500}
                             />
                         )

@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
 import { toPng } from 'html-to-image';
 import { ActionIcon, Tooltip } from '@mantine/core';
-import { TbDownload } from 'react-icons/tb';
+import { TbCamera } from 'react-icons/tb';
 import classes from './DownloadButton.module.css';
 
 interface DownloadButtonProps {
@@ -21,9 +21,9 @@ export function DownloadButton({chartRef}: DownloadButtonProps) {
     link.click();
   };
   return (
-    <Tooltip label="Download Plot">
+    <Tooltip label="Download plot as png">
       <ActionIcon className={classes.icon} size="xl" variant="transparent" onClick={downloadChart}>
-          <TbDownload style={{ width: 32, height: 32 }}/>
+          <TbCamera style={{ width: 32, height: 32 }}/>
       </ActionIcon>
     </Tooltip>
   )

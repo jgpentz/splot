@@ -8,7 +8,7 @@ import { NavbarLink, NavbarLinkData } from "../NavbarLink/NavbarLink";
 // Navigation links
 const links = [
     { link: '', label: 'S Parameters', icon: TbChartLine },
-    { link: '', label: 'Settings', icon: TbSettings },
+    // { link: '', label: 'Settings', icon: TbSettings },
 ];
 
 
