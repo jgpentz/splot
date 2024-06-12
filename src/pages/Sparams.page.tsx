@@ -32,7 +32,6 @@ export interface SparamFiles {
 export function SparamsPage() {
     const [navCollapsed, { toggle: toggleNav }] = useDisclosure(false);
     const [sparams, setSparams] = useState<Record<string, SparamFiles>>({});
-console.log(sparams)
 
     return (
         <AppShell
