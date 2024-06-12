@@ -40,6 +40,7 @@ export function SparamGraph({sparams, setSparams}: SparamGraphProps) {
     const chartRef = useRef(null);
     const [dropzoneVisible, setDropzoneVisible] = useState(true); // Initially, dropzone is invisible
     const [height, setHeight] = useState(window.innerHeight * 0.85);
+    const [title, setTitle] = useState("My Chart Title");
     const [lineData, setLineData] = useState<any[]>([]);
     const [state, setState] = useState(initialState);
     const [dummyData, setDummyData] = useState<SGraphDataLiteral>({
@@ -334,6 +335,10 @@ export function SparamGraph({sparams, setSparams}: SparamGraphProps) {
         });
     }
 
+    const handleTitleChange = (e: any) => {
+        setTitle(e.target.value);
+    };
+
     return (
         <Container
             fluid
@@ -344,6 +349,15 @@ export function SparamGraph({sparams, setSparams}: SparamGraphProps) {
             onDragLeave={handleDragLeave} // Add drag leave event listener
             onDoubleClick={zoomOut}
         >
+            {/* Editable Chart Title */}
+            <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+                <input 
+                    type="text" 
+                    value={title} 
+                    onChange={handleTitleChange} 
+                    style={{ fontSize: '24px', textAlign: 'center', width: '100%', border: 'none', outline: 'none' }}
+                />
+            </div>
             <ResponsiveContainer ref={chartRef}>
                 <LineChart 
                     onMouseDown={(e: any) => setState((prevState) => ({ ...prevState, refAreaLeft: e.activeLabel }))}
