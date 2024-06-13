@@ -6,6 +6,7 @@ import { TbFileUpload, TbGraph, TbX } from 'react-icons/tb';
 import classes from './SparamGraph.module.css';
 import { DataSet, SGraphDataLiteral, SGraphDataPoint, SparamFiles } from '@/pages/Sparams.page';
 import { DownloadButton } from '../DownloadButton/DownloadButton';
+import { notifications } from '@mantine/notifications';
 
 // Color-blind friendly color palette
 const okabe_ito_colors: string[] = [
@@ -39,8 +40,9 @@ interface SparamGraphProps {
 export function SparamGraph({sparams, setSparams}: SparamGraphProps) {
     const chartRef = useRef(null);
     const [dropzoneVisible, setDropzoneVisible] = useState(true); // Initially, dropzone is invisible
+    const [fileUploading, setFileUploading] = useState(false);
     const [height, setHeight] = useState(window.innerHeight * 0.85);
-    const [title, setTitle] = useState("My Chart Title");
+    const [title, setTitle] = useState("[click to edit title]");
     const [lineData, setLineData] = useState<any[]>([]);
     const [state, setState] = useState(initialState);
     const [dummyData, setDummyData] = useState<SGraphDataLiteral>({
@@ -163,11 +165,26 @@ export function SparamGraph({sparams, setSparams}: SparamGraphProps) {
             });
 
             if (!response.ok) {
+                setFileUploading(false)
+                if (lineData.length > 0){
+                    setDropzoneVisible(false)
+                }
+
+                notifications.show({
+                    color: 'red',
+                    title: 'Bad network response',
+                    message: '',
+                    classNames: classes,
+                })
+
                 throw new Error('Network response was not ok');
             }
 
             const responseData: Record<string, SparamFiles> = await response.json();
             console.log('Successfully sent data to the backend', responseData);
+
+            setDropzoneVisible(false)
+            setFileUploading(false)
 
             // Append the new sparams data
             setSparams(prevSparams => ({
@@ -177,12 +194,24 @@ export function SparamGraph({sparams, setSparams}: SparamGraphProps) {
 
         } catch (error) {
                 console.error('Error sending data to the backend', error);
+                setFileUploading(false)
+                if (lineData.length > 0){
+                    setDropzoneVisible(false)
+                }
+
+                notifications.show({
+                    color: 'red',
+                    title: 'Failed to upload files',
+                    message: '',
+                    classNames: classes,
+                })
         }
     };
 
     /* Send file data to backend, then store the processed data in sparams list */
     const getFileData = (files: File[]) => {
         const newFiles: File[] = []
+        const acceptedFiles = new Set()
         const regex = /^s\d+p$/;
 
         // Filter files that match the regex pattern
@@ -193,31 +222,67 @@ export function SparamGraph({sparams, setSparams}: SparamGraphProps) {
         });
 
         filteredFiles.forEach(file => {
+            acceptedFiles.add(file.name)
             newFiles.push(file)
         });
+
+        // Notify of bad file extensions
+        const rejectedFiles: string[] = []
+        files.forEach(file => {
+            if (!acceptedFiles.has(file.name)) {
+                rejectedFiles.push(file.name)
+            }
+        })
+        if (rejectedFiles.length) {
+            notifications.show({
+                color: 'red',
+                title: 'Bad file extension',
+                message: rejectedFiles.join(', '),
+                classNames: classes,
+            })
+        }
 
         // Only send files to backend if there were files with a snp extension
         if (newFiles.length > 0) {
             processFileData(newFiles);
         } else {
+            setFileUploading(false)
             // Have to set the dropzone back to visible if there are no sparams
             if (lineData.length === 0) {
                 setDropzoneVisible(true);
+            } else {
+                setDropzoneVisible(false);
             }
         }
     }
 
     /* Handle file drop */
     const handleDrop = (files: File[]) => {
-        console.log('accepted files', files);
-        setDropzoneVisible(false); // Hide dropzone after file is dropped
+        console.log('received files', files);
+        setFileUploading(true)
         getFileData(files)
     };
 
     /* Handle rejected file types */
     const handleReject = (files: FileRejection[]) => {
         console.log('rejected files', files);
-        setDropzoneVisible(false); // Hide dropzone if file is rejected
+
+        setFileUploading(false)
+        if (lineData.length > 0) {
+            setDropzoneVisible(false)
+        }
+
+        const fnames: string[] = [] 
+        files.forEach(file => {
+            fnames.push(file.file.name)
+        })
+
+        notifications.show({
+            color: 'red',
+            title: 'Bad file extension',
+            message: fnames.join(', '),
+            classNames: classes,
+        })
     };
 
     /* Handle when a file is dragged onto the window */
@@ -266,8 +331,22 @@ export function SparamGraph({sparams, setSparams}: SparamGraphProps) {
             }
         });
 
-        return [(bottom ?? 0)- offset, (top ?? 0) + offset];
+        // Round bottom and top
+        if (bottom && top) {
+            bottom = Math.floor((bottom - offset) / 10) * 10
+            top = Math.ceil((top + offset) / 10) * 10
+        }
+
+        return [(bottom ?? 0), (top ?? 0)];
     };
+
+    const formatXAxis = (tickItem: number) => {
+        if (tickItem % 1 != 0) {
+            return String(tickItem.toFixed(2));
+        } else {
+            return String(tickItem)
+        }
+    }
 
     /* Provides click and drag zoom functionality to plot */
     const zoom = useCallback(() => {
@@ -294,6 +373,7 @@ export function SparamGraph({sparams, setSparams}: SparamGraphProps) {
             1
         );
 
+    console.log(parseFloat(refAreaLeft).toFixed(1))
         setState((prevState: any) => ({
             ...prevState,
             refAreaLeft: "",
@@ -339,6 +419,7 @@ export function SparamGraph({sparams, setSparams}: SparamGraphProps) {
         setTitle(e.target.value);
     };
 
+    console.log(bottom, top)
     return (
         <Container
             fluid
@@ -363,6 +444,7 @@ export function SparamGraph({sparams, setSparams}: SparamGraphProps) {
                     onMouseDown={(e: any) => setState((prevState) => ({ ...prevState, refAreaLeft: e.activeLabel }))}
                     onMouseMove={(e: any) => refAreaLeft && setState((prevState) => ({ ...prevState, refAreaRight: e.activeLabel }))}
                     onMouseUp={zoom}
+                    style={{ cursor: 'crosshair', userSelect: 'none'}}
                 >
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis 
@@ -372,28 +454,27 @@ export function SparamGraph({sparams, setSparams}: SparamGraphProps) {
                         height={50}
                         domain = {[left, right]}
                         allowDataOverflow
-                        style={{ userSelect: 'none'}}
+                        unit="G"
+                        tickFormatter={formatXAxis}
                     >
                         <Label 
-                            value="GHz" 
+                            value="Hz" 
                             offset={0} 
                             position="insideBottom" 
                             fontSize={20} 
-                            style={{ userSelect: 'none' }}
                         />
                     </XAxis>
                     <YAxis 
                         dataKey="value" 
                         domain={lineData.length === 0 ? [0, 50] : [bottom, top]}
                         allowDataOverflow={left !== "dataMin"}
-                        style={{ userSelect: 'none'}}
+                        scale="linear"
                     >
                         <Label 
                             value="dB" 
                             angle={-90} 
                             position="insideLeft" 
                             fontSize={20} 
-                            style={{ userSelect: 'none'}} 
                         />
                     </YAxis>
                     <Legend 
@@ -401,7 +482,6 @@ export function SparamGraph({sparams, setSparams}: SparamGraphProps) {
                         align='right' 
                         verticalAlign='top' 
                         wrapperStyle={{ paddingLeft: "20px" }}
-                        style={{ userSelect: 'none' }}
                         onClick={props => handleLegendClick(props.value)}
                     />
                     <Tooltip offset={75} labelFormatter={(value) => `${value} GHz`} />
@@ -450,6 +530,7 @@ export function SparamGraph({sparams, setSparams}: SparamGraphProps) {
                 <Dropzone
                     onDrop={handleDrop}
                     onReject={handleReject}
+                    loading={fileUploading}
                     maxSize={5 * 1024 ** 2}
                     style={{
                         position: 'absolute',
