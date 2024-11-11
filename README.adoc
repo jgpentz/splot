@@ -63,7 +63,6 @@ All done! ✨ 🍰 ✨
 > git push --tags
 ----
 
-. After production images have been built, the must be deployed by IT. Contact Jacob Felknor
 
 === Versioning
 
