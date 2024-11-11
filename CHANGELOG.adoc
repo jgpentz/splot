@@ -1,0 +1,210 @@
+// Metadata
+:doctitle: Changelog - frf-splot_api
+:orgname: FirstRF
+:version-label: Release
+:revnumber: 0.3.4
+:revdate:
+:!example-caption:
+
+
+// Settings
+// :experimental:
+:toc:
+
+// IMPORTANT!  DO NOT CHANGE UNTIL YOU ARE READY TO BUMP VERSION
+// AND UNRELEASED SECTION HAS BEEN REVIEWED!
+// Once changged, please preview before bump to make sure no formatting mistakes were made
+:approved-for-release: no
+
+// Please be mindful of the end audience. If this file is customer facing, only
+// share information which is relevant to their available API.
+// The only lines that should be edited below are the
+//  1. Description line (first line starting with a dot and no space)
+//  2. Lines that start with '-', or new lines in the appropriate block starting with '-'
+
+ifeval::["{approved-for-release}" == "yes"]
+== UNRELEASED
+
+.Edit this line to be a brief description of the release
+=====
+.Features
+====
+- Add Feature Changes Here
+====
+.Bugfixes
+====
+- Add Bugfix Changes Here
+====
+=====
+endif::[]
+
+// AUTOMATICALLY GENERATED OUTPUT BELOW.  DO NOT EDIT BELOW HERE
+== {version-label} 0.3.4 - ( Nov 05, 2024, 12:52 PM )
+
+.Edit this line to be a brief description of the release
+=====
+.Features
+====
+====
+.Bugfixes
+====
+- Updated read_t4ouchstone to use utf-8 as the default encoding for files.
+====
+=====
+
+
+
+== {version-label} 0.3.3 - ( Nov 05, 2024, 12:16 PM )
+
+.Edit this line to be a brief description of the release
+=====
+.Features
+====
+====
+.Bugfixes
+====
+- Updated the backend file processing to detect the .snp file encoding before 
+    processing the file
+- Changed the front end plot width to scale correctly when the navbar is
+    collapsed/uncollapsed
+- Updated the set axes input fields to use base units (e.g. 1e9), and added
+    placeholders that make this more clear
+====
+=====
+
+
+
+== {version-label} 0.3.2 - ( Oct 02, 2024, 22:42 PM )
+
+.Edit this line to be a brief description of the release
+=====
+.Features
+====
+====
+.Bugfixes
+====
+- Using python builtin environment variable fetching
+====
+=====
+
+
+
+== {version-label} 0.3.1 - ( Oct 02, 2024, 21:29 PM )
+
+.Edit this line to be a brief description of the release
+=====
+.Features
+====
+====
+.Bugfixes
+====
+- The frontend now fetches the repo url link from the backend, making it so
+  that we only need 1 build output for the frontend, and then an env variable
+  gets set on the backend docker container. The backend then reads in the env
+  variable
+====
+=====
+
+
+
+== {version-label} 0.3.0 - ( Sep 30, 2024, 15:10 PM )
+
+.Edit this line to be a brief description of the release
+=====
+.Features
+====
+-Added a external link to the source code in the navbar.  The source code
+  url must be configured in .env_default, and then all env variables in
+  .env_default must be copied into a .env file before building the code.
+====
+.Bugfixes
+====
+====
+=====
+
+
+
+== {version-label} 0.2.2 - ( Sep 18, 2024, 14:08 PM )
+
+.Edit this line to be a brief description of the release
+=====
+.Features
+====
+====
+.Bugfixes
+====
+- VSWR now shows x axis values to hundreths place on hover.
+- Disabled y axis input fields in the set axes modal for the VSWR plot.
+====
+=====
+
+
+
+== {version-label} 0.2.1 - ( Sep 17, 2024, 14:45 PM )
+
+.Edit this line to be a brief description of the release
+=====
+.Features
+====
+====
+.Bugfixes
+====
+- Version string in frontend navbar now updates with bumpversion
+====
+=====
+
+
+
+== {version-label} 0.2.0 - ( Sep 17, 2024, 12:39 PM )
+
+.Edit this line to be a brief description of the release
+=====
+.Features
+====
+- Added a new graph button for setting the x/y axes manually.
+====
+.Bugfixes
+====
+====
+=====
+
+
+
+== {version-label} 0.1.3 - ( Sep 10, 2024, 22:03 PM )
+
+.Edit this line to be a brief description of the release
+=====
+.Features
+====
+====
+.Bugfixes
+====
+- The x axis ticks now format based on zoom level, maxing out at single MHz.
+- The x axis hover ticks is now always in single MHz
+====
+=====
+
+
+
+== {version-label} 0.1.2 - ( Sep 10, 2024, 21:49 PM )
+
+.Edit this line to be a brief description of the release
+=====
+.Features
+====
+====
+.Bugfixes
+====
+- The vswr and sparams routes now return float64 max/min values instead of
+  inf/-inf values, since inf is not a valid float to encode for JSON.
+====
+=====
+
+
+
+
+== {version-label} 0.1.1 - ( Jul 12, 2024, 15:57 PM )
+initial release
+
+
+

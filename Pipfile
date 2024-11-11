@@ -1,0 +1,23 @@
+[[source]]
+url = "https://pypi.firstrf.com/simple"
+verify_ssl = true
+name = "frf"
+
+[packages]
+fastapi = "*"
+numpy = "*"
+scipy = "*"
+uvicorn = "*"
+xarray = "*"
+rich_click = "*"
+
+[dev-packages]
+wheel = "*"
+black = "*"
+bump2version = "*"
+flake8 = "*"
+parameterized = "*"
+pytest = "*"
+pytest-cov = "*"
+mypy = "*"
+coverage = {extras = ["toml"], version = "*"}

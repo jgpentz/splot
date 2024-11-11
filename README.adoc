@@ -1,0 +1,150 @@
+// Metadata
+:title: splot docker readme
+:source-highlighter: rouge
+:rouge-style: igor_pro
+// Enables
+:experimental:
+:toc:
+:icons: font
+// Optional
+//:sectnums:
+
+= splot docker
+
+New version of FIRST RF custom s parameter plotting site, hosted at <https://snp.firstrf.com>. Composed of both a backend written with Python and FastAPI, and a frontend written in React.
+
+
+== Developing
+
+This project has been configured with VSCode Development Containers. All that is required to get started is Docker and VSCode. FIRST RF's WSL2 image can be used to make Docker available if you're on a Windows machine.
+
+. Git clone `splot_api`
+
+. Open the project in VSCode. Ensure the "remote containers" extension is installed.
+
+. Use `F1 + Reopen in Container`. VSCode will now build your development container and install all project dependencies
+
+. Start your development server in two separate terminal sessions. VSCode will port forward automatically. Open the `localhost` URL outputted by the frontend dev server to view the development instance of the site.
++
+[source,bash]
+----
+# FastAPI backend
+python src/backend/splot_api/splot_apt.py
+
+# React frontend
+cd src/frontend
+npm run dev
+----
+
+. (Optional) Checkout a branch (`git checkout -b my_branch`) and make your changes.
+
+. Ensure that your code meets all formatting and linting requirements
++
+[source,shell-session]
+----
+> black .
+All done! ✨ 🍰 ✨
+50 files left unchanged.
+> flake8 --config=setup.cfg
+----
+
+. Update `CHANGELOG.adoc` with a description of your changes. If this project is customer facing, limit yourself to only the relevant public API information which will be shared with the customer.
+
+. If you are not working directly on `main`:
+.. Rebase or merge `main` to your branch and re-run all tests to ensure everything still passes.
+.. Merge your branch to `main`
+
+. (Optional) Creating a new tag will automatically build updated images for use in production and place them in https://gitlab.firstrf.com/first-rf-web/splot-docker/container_registry[the project's container registry]
++
+[source,bash]
+----
+> bumpversion minor
+> git push
+> git push --tags
+----
+
+. After production images have been built, the must be deployed by IT. Contact Jacob Felknor
+
+=== Versioning
+
+This package follows the https://semver.org/[Semantic Versioning 2.0.0] paradigm for version numbering. Given a version number `MAJOR.MINOR.PATCH`, increment the:
+
+- MAJOR version when you make incompatible API changes (backwards incompatible)
+- MINOR version when you add functionality in a backwards compatible manner
+- PATCH version when you make backwards compatible bug fixes to existing functions
+
+
+==== Release Candidates
+
+If required, release candidates may be used to indicate a version is pre-release. The included `.bumpversion.cfg`
+supports release candidates, but requires a special flow due to limitations with `bumpversion` itself.
+An example development flow is illustrated below:
+
+[source,bash]
+----
+# Assume we are starting at version v0.0.1, and we do a few typical bumps
+bumpversion patch
+# v0.0.1 -> v0.0.2
+
+bumpversion minor
+# v0.0.2 -> v0.1.0
+
+# at this point, development matured and we're almost ready for a 1.0.0 release
+# let's do a release candidate first before we release it to the wild
+# --new-version is required to switch over to "release candidate mode"
+bumpversion major --new-version="1.0.0rc0"
+# v0.1.0 --> v1.0.0rc0
+
+# hey! we caught a bug. Let's bump to a new RC candidate
+bumpversion pre
+# v1.0.0rc0 --> v1.0.0rc1
+
+# one more bug...
+bumpversion pre
+# v1.0.0rc1 --> v1.0.0rc2
+
+# okay. We're good to go on the official release.
+# must use --new-version again to switch back to "normal mode"
+bumpversion pre --new-version="1.0.0"
+# v1.0.0rc2 --> v1.0.0
+
+# and so on.....
+----
+
+==== IMPORTANT
+After making changes, please add brief descriptions of your changes at the
+top of the CHANGELOG.adoc file. Leave the following flag in place until ready for release.
+....
+:approved-for-release: no
+This flag needs to be switched to
+:approved-for-release: yes
+....
+when ready to release.  This will also allow you to preview the UNRELEASED
+section before submitting.  Bumping the version will fail if 'approved-for-release' is no.
+A successfull bump will replace a new 'template' section in CHANGELOG.adoc as well as move the 'approved-for-release' flag back to 'no'.
+
+
+NOTE: Please be mindful of the end audience. If this file is customer facing, only
+share information which is relevant to their available API. Each section
+should have the layout as follows:
+
+[source,asciidoc]
+.Template Section
+----
+
+ :approved-for-release: no
+ ifeval::["\{approved-for-release}" == "yes"]
+ == UNRELEASED
+ .Edit this line to be a brief description of the release
+ ====
+ .Features
+ ===
+ - Add Feature Changes Here
+ ===
+ .Bugfixes
+ ===
+ - Add Bugfix Changes Here
+ ===
+ ====
+ endif::[]
+----
